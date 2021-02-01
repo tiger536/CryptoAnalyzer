@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
-using System.Net.Http;
+﻿using CryptoAnalyzer.Service;
+using Microsoft.Extensions.Hosting;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,15 +7,18 @@ namespace CryptoAnalyzer.CoinGecko
 {
 	public class CoinGeckoApi : IHostedService
 	{
-		private static HttpClient _httpClient;
-		public CoinGeckoApi(IHttpClientFactory clientFactory)
+		private static IThrottledService _httpClient;
+		public CoinGeckoApi(IThrottledService client)
 		{
-			_httpClient = clientFactory.CreateClient("CoinGecko");
+			_httpClient = client;
 		}
 		public Task StartAsync(CancellationToken cancellationToken)
 		{
 			var grabber = new CoinGeckoGrabber(_httpClient);
 			Task.Run(() => grabber.GrabAsync());
+
+			var coinListGrabber = new CoinListGrabber(_httpClient);
+			Task.Run(() => coinListGrabber.GrabAsync());
 
 			return Task.CompletedTask;
 		}

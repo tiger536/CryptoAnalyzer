@@ -1,4 +1,5 @@
 using CryptoAnalyzer.CoinGecko;
+using CryptoAnalyzer.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,9 +25,9 @@ namespace CryptoAnalyzer
 		{
 			Context.Initialize(Configuration, Environment);
 
-			services.AddHttpClient("CoinGecko", c =>
+			services.AddHttpClient<IThrottledService, ThrottledService>(client =>
 			{
-				c.BaseAddress = new Uri(Context.CoinGeckoConfiguration.ApiBaseUrl);
+				client.BaseAddress = new Uri(Context.CoinGeckoConfiguration.ApiBaseUrl);
 			});
 			services.AddHostedService<CoinGeckoApi>();
 
