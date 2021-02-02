@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
@@ -16,23 +17,40 @@ namespace CryptoAnalyzer.Service
         }
 
         public Task<T> GetAsync<T>(string partialPath)
+            where T : new()
         {
             var tcs = new TaskCompletionSource<T>();
 
             _throttler.WaitAsync().ContinueWith(async t =>
             {
                 var stopwatch = new Stopwatch();
-                tcs.SetResult(JsonConvert.DeserializeObject<T>(await _httpClient.GetStringAsync(partialPath)));
+                stopwatch.Start();
+                try
+                {
+                    var response = await _httpClient.GetAsync(partialPath);
+                    if(response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+					{
+                        await Task.Delay(7000);
+                        response = await _httpClient.GetAsync(partialPath);
+                    }
+                    response.EnsureSuccessStatusCode();
+                    var result = await response.Content.ReadAsStringAsync();
+
+                    tcs.SetResult(JsonConvert.DeserializeObject<T>(result));
+                }
+                catch(Exception e)
+				{
+                    tcs.SetResult(new T());
+                }
                 stopwatch.Stop();
-                return stopwatch.ElapsedMilliseconds;
-            }).Unwrap().ContinueWith(async antecedent =>
-            {
-                var delay = antecedent.Result > 50 ? 0 : 50 - antecedent.Result;
+
+                var delay = stopwatch.ElapsedMilliseconds > 1000 ? 0 : 1000 - stopwatch.ElapsedMilliseconds;
                 if (delay > 0)
                     await Task.Delay((int)delay);
 
                 _throttler.Release();
             });
+
             return tcs.Task;
         }
     }
