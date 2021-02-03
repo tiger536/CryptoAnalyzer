@@ -22,12 +22,14 @@ namespace CryptoAnalyzer.CoinGecko
 
 		public async Task GrabAsync()
 		{
-			try
+			while (!_globalCancellation.Token.IsCancellationRequested)
 			{
-				var newCoins = new List<Coin>();
-				using (var conn = Context.OpenDatabaseConnection())
+				try
 				{
-					var dbCoins = (await conn.QueryAsync<Coin>(@"
+					var newCoins = new List<Coin>();
+					using (var conn = Context.OpenDatabaseConnection())
+					{
+						var dbCoins = (await conn.QueryAsync<Coin>(@"
 SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 SELECT
 	Code,
@@ -35,59 +37,64 @@ SELECT
 	Name
 FROM
 	dbo.CryptoCurrency")).ToHashSet();
-					var allCoins = (await _client.GetAsync<List<Coin>>("coins/list")).Where(x => !x.Code.Contains("token", StringComparison.InvariantCulture));
-					newCoins = allCoins.Where(x => !dbCoins.Contains(x)).ToList();
-				}
-
-				var query = new Dictionary<string, string>
-				{
-					["localization"] = "false",
-					["tickers"] = "false",
-					["market_data"] = "false",
-					["community_data"] = "false",
-					["developer_data"] = "false"
-				};
-
-				foreach (var coin in newCoins)
-				{
-					var coinDetail = await _client.GetAsync<CoinDetail>(QueryHelpers.AddQueryString($"coins/{coin.Code}", query));
-					using(var conn = Context.OpenDatabaseConnection())
-					{
-						await conn.ExecuteAsync(@"
-INSERT INTO dbo.CryptoCurrency(Code, Symbol, Name, MarketCapRank, PublicInterestScore)
-VALUES
-(@Code, @Symbol, @Name, @MarketCapRank, @PublicInterestScore)", new 
-						{
-							Code = new DbString()
-							{
-								Value = coin.Code,
-								IsAnsi = true,
-								Length = 50
-							},
-							Symbol = new DbString()
-							{
-								Value = coin.Symbol,
-								IsAnsi = true,
-								Length = 10
-							},
-							Name = new DbString()
-							{
-								Value = coin.Name,
-								IsAnsi = true,
-								Length = 100
-							},
-							coinDetail.MarketCapRank,
-							coinDetail.PublicInterestScore
-						});
+						var allCoins = (await _client.GetAsync<List<Coin>>("coins/list")).Where(x => !x.Code.Contains("token", StringComparison.InvariantCulture));
+						newCoins = allCoins.Where(x => !dbCoins.Contains(x)).ToList();
 					}
+
+					var query = new Dictionary<string, string>
+					{
+						["localization"] = "false",
+						["tickers"] = "false",
+						["market_data"] = "false",
+						["community_data"] = "false",
+						["developer_data"] = "false"
+					};
+
+					foreach (var coin in newCoins)
+					{
+						var coinDetail = await _client.GetAsync<CoinDetail>(QueryHelpers.AddQueryString($"coins/{coin.Code}", query));
+						using (var conn = Context.OpenDatabaseConnection())
+						{
+							await conn.ExecuteAsync(@"
+INSERT INTO dbo.CryptoCurrency(Code, Symbol, Name, MarketCapRank)
+VALUES
+(@Code, @Symbol, @Name, @MarketCapRank)", new
+							{
+								Code = new DbString()
+								{
+									Value = coin.Code,
+									IsAnsi = true,
+									Length = 50
+								},
+								Symbol = new DbString()
+								{
+									Value = coin.Symbol,
+									IsAnsi = true,
+									Length = 10
+								},
+								Name = new DbString()
+								{
+									Value = coin.Name,
+									IsAnsi = true,
+									Length = 100
+								},
+								coinDetail.MarketCapRank
+							});
+						}
+					}
+
 				}
+				catch (Exception e)
+				{
 
+				}
+				await Task.Delay(TimeSpan.FromDays(1));
 			}
-			catch (Exception e)
-			{
+		}
 
-			}
-			return;
+		public void Cancel()
+		{
+			_globalCancellation.Cancel();
 		}
 	}
 }

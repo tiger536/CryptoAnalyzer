@@ -8,23 +8,25 @@ namespace CryptoAnalyzer.CoinGecko
 	public class CoinGeckoApi : IHostedService
 	{
 		private static IThrottledService _httpClient;
+		private static CoinGeckoGrabber _grabber;
+		private static CoinListGrabber _coinListGrabber;
 		public CoinGeckoApi(IThrottledService client)
 		{
 			_httpClient = client;
+			_grabber = new CoinGeckoGrabber(_httpClient);
+			_coinListGrabber = new CoinListGrabber(_httpClient);
 		}
 		public Task StartAsync(CancellationToken cancellationToken)
-		{
-			var grabber = new CoinGeckoGrabber(_httpClient);
-			Task.Run(() => grabber.GrabAsync());
-
-			var coinListGrabber = new CoinListGrabber(_httpClient);
-			Task.Run(() => coinListGrabber.GrabAsync());
+		{		
+			Task.Run(() => _grabber.GrabAsync());		
+			Task.Run(() => _coinListGrabber.GrabAsync());
 
 			return Task.CompletedTask;
 		}
 
 		public Task StopAsync(CancellationToken cancellationToken)
 		{
+			_coinListGrabber.Cancel();
 			return Task.CompletedTask;
 		}
 	}

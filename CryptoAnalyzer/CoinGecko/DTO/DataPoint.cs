@@ -50,7 +50,7 @@ namespace CryptoAnalyzer.CoinGecko.DTO
 			return Points.GetEnumerator();
 		}
 
-		public decimal Volume => Convert.ToDecimal(Points[1]);
+		public decimal PointValue => Convert.ToDecimal(Points[1]);
 		public DateTimeOffset Date => DateTimeOffset.FromUnixTimeMilliseconds(Convert.ToInt64(Points[0]));
 	}
 }
