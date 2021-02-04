@@ -26,7 +26,7 @@ namespace CryptoAnalyzer.CoinGecko
 			{
 				var coin = await Coin.GetByCode(COIN_EXAMPLE);
 
-				DateTimeOffset? lastUpdateTime = await CoinDetail.GetLastUpdateDate(coin.Id);
+				var lastUpdateTime = await CoinDetail.GetLastUpdateDate(coin.Id);
 				if (lastUpdateTime == null || (DateTimeOffset.UtcNow - lastUpdateTime > TimeSpan.FromDays(1)))
 					lastUpdateTime = DateTimeOffset.Now.AddMinutes(5).AddDays(-1);
 
@@ -45,7 +45,7 @@ namespace CryptoAnalyzer.CoinGecko
 					var price = coinDataByInterval.Prices[i];
 					if((volume.Date != marketCap.Date) || (marketCap.Date != price.Date))
 					{
-						throw new Exception("data not the same");
+						throw new Exception("Data was not taken at the same time");
 					}
 
 					dataPoints.Add(new CoinDetailDTO()
