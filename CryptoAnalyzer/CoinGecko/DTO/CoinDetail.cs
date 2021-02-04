@@ -1,6 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using Dapper;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CryptoAnalyzer.CoinGecko.DTO
 {
@@ -73,5 +75,36 @@ namespace CryptoAnalyzer.CoinGecko.DTO
         public PublicInterestStats public_interest_stats { get; set; }
         public List<object> status_updates { get; set; }
         public DateTime? last_updated { get; set; }
+
+        public static async Task<DateTimeOffset?>GetLastUpdateDate(int coinID)
+		{
+            using (var conn = Context.OpenDatabaseConnection())
+			{
+                return await conn.QuerySingleOrDefaultAsync<DateTimeOffset?>(@"
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+SELECT TOP 1 LogDate FROM dbo.CryptoDetails WHERE CoinId = @coinID ORDER BY Id DESC", new { coinID });
+            }
+		}
+
+        public static async Task BulkInsert(int coinID, List<CoinDetailDTO> dapaPoints)
+		{
+            using (var connection = Context.OpenDatabaseConnection())
+            {
+                foreach (var data in dapaPoints)
+                {
+                    await connection.ExecuteAsync(@"
+INSERT INTO dbo.CryptoDetails (CoinId, LogDate, Volume, Price, MarketCap)
+VALUES
+(@CoinId, @LogDate, @Volume, @Price, @MarketCap)", new
+                    {
+                        CoinId = coinID,
+						data.LogDate,
+                        data.Volume,
+                        data.Price,
+                        data.MarketCap
+                    });
+                }
+            }
+        }
     }
 }

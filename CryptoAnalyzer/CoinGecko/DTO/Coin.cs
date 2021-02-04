@@ -1,4 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using Dapper;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CryptoAnalyzer.CoinGecko.DTO
 {
@@ -31,6 +35,71 @@ namespace CryptoAnalyzer.CoinGecko.DTO
 			}
 
 			return fooItem.Code.Equals(this.Code) && fooItem.Name.Equals(this.Name) && fooItem.Symbol.Equals(this.Symbol);
+		}
+
+		public static async Task<Coin> GetByCode(string code)
+		{
+			using (var conn = Context.OpenDatabaseConnection())
+			{
+				return await conn.QueryFirstOrDefaultAsync<Coin>(@"
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+SELECT
+	Id,
+	Code,
+	Symbol,
+	Name
+FROM
+	dbo.CryptoCurrency
+WHERE Code = @code", new { code = new DbString() { IsAnsi = true, Value = code, Length = 50 } });
+			}
+		}
+
+		public static async Task<HashSet<Coin>> GetAll()
+		{
+			using (var conn = Context.OpenDatabaseConnection())
+			{
+				return (await conn.QueryAsync<Coin>(@"
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+SELECT
+	Id,
+	Code,
+	Symbol,
+	Name
+FROM
+	dbo.CryptoCurrency")).ToHashSet();
+			}
+		}
+
+		public static async Task Insert(Coin coin)
+		{
+			using (var conn = Context.OpenDatabaseConnection())
+			{
+				await conn.ExecuteAsync(@"
+INSERT INTO dbo.CryptoCurrency(Code, Symbol, Name, MarketCapRank)
+VALUES
+(@Code, @Symbol, @Name, @MarketCapRank)", new
+				{
+					Code = new DbString()
+					{
+						Value = coin.Code,
+						IsAnsi = true,
+						Length = 50
+					},
+					Symbol = new DbString()
+					{
+						Value = coin.Symbol,
+						IsAnsi = true,
+						Length = 10
+					},
+					Name = new DbString()
+					{
+						Value = coin.Name,
+						IsAnsi = true,
+						Length = 100
+					},
+					coin.MarketCapRank
+				});
+			}
 		}
 	}
 }

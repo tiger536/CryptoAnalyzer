@@ -19,7 +19,7 @@ namespace CryptoAnalyzer.CoinGecko
 		public Task StartAsync(CancellationToken cancellationToken)
 		{		
 			Task.Run(() => _grabber.GrabAsync());		
-			Task.Run(() => _coinListGrabber.GrabAsync());
+			//Task.Run(() => _coinListGrabber.GrabAsync());
 
 			return Task.CompletedTask;
 		}
