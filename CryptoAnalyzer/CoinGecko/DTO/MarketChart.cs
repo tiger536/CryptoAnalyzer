@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 namespace CryptoAnalyzer.DTO.CoinGecko
 {
-	public class MarketChart
-	{
-		[JsonProperty("prices")]
-		public List<DataPoint> Prices { get; set; }
-		[JsonProperty("market_caps")]
-		public List<DataPoint> MarketCaps { get; set; }
-		[JsonProperty("total_volumes")]
-		public List<DataPoint> TotalVolumes { get; set; }
-	}
+    public class MarketChart
+    {
+        [JsonProperty("prices")]
+        public List<DataPoint> Prices { get; set; }
+        [JsonProperty("market_caps")]
+        public List<DataPoint> MarketCaps { get; set; }
+        [JsonProperty("total_volumes")]
+        public List<DataPoint> TotalVolumes { get; set; }
+    }
 }

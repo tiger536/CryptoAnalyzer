@@ -29,7 +29,7 @@ namespace CryptoAnalyzer.Service
                 {
                     var response = await _httpClient.GetAsync(partialPath);
                     if(response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-					{
+                    {
                         await Task.Delay(7000);
                         response = await _httpClient.GetAsync(partialPath);
                     }
@@ -39,7 +39,7 @@ namespace CryptoAnalyzer.Service
                     tcs.SetResult(JsonConvert.DeserializeObject<T>(result));
                 }
                 catch(Exception e)
-				{
+                {
                     tcs.SetResult(new T());
                 }
                 stopwatch.Stop();

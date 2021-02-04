@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace CryptoAnalyzer.Models
 {
-	public class CryptoDataPoint
-	{
-		public DateTimeOffset LogDate { get; set; }
-		public decimal Volume { get; set; }
-		public decimal Price { get; set; }
-		public decimal MarketCap { get; set; }
+    public class CryptoDataPoint
+    {
+        public DateTimeOffset LogDate { get; set; }
+        public decimal Volume { get; set; }
+        public decimal Price { get; set; }
+        public decimal MarketCap { get; set; }
 
         public static async Task<DateTimeOffset?> GetLastUpdateDate(int coinID)
         {
@@ -21,7 +21,7 @@ SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 SELECT TOP 1 LogDate FROM dbo.CryptoDetails WHERE CoinId = @coinID ORDER BY Id DESC", new { coinID });
             }
         }
-
+         
         public static async Task BulkInsert(int coinID, List<CryptoDataPoint> dapaPoints)
         {
             using (var connection = Context.OpenDatabaseConnection())
