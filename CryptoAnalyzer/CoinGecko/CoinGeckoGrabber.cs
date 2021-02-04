@@ -1,5 +1,6 @@
 ﻿using CryptoAnalyzer.CoinGecko.DTO;
 using CryptoAnalyzer.DTO.CoinGecko;
+using CryptoAnalyzer.Models;
 using CryptoAnalyzer.Service;
 using Microsoft.AspNetCore.WebUtilities;
 using System;
@@ -26,7 +27,7 @@ namespace CryptoAnalyzer.CoinGecko
 			{
 				var coin = await Coin.GetByCode(COIN_EXAMPLE);
 
-				var lastUpdateTime = await CoinDetail.GetLastUpdateDate(coin.Id);
+				var lastUpdateTime = await CryptoDataPoint.GetLastUpdateDate(coin.Id);
 				if (lastUpdateTime == null || (DateTimeOffset.UtcNow - lastUpdateTime > TimeSpan.FromDays(1)))
 					lastUpdateTime = DateTimeOffset.Now.AddMinutes(5).AddDays(-1);
 
@@ -37,7 +38,7 @@ namespace CryptoAnalyzer.CoinGecko
 					["to"] = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
 				};
 				var coinDataByInterval = await _client.GetAsync<MarketChart>(QueryHelpers.AddQueryString("coins/bitcoin/market_chart/range", querystringParam));
-				var dataPoints = new List<CoinDetailDTO>();
+				var dataPoints = new List<CryptoDataPoint>();
 				for(int i = 0; i < coinDataByInterval.TotalVolumes.Count; i++)
 				{
 					var volume = coinDataByInterval.TotalVolumes[i];
@@ -48,7 +49,7 @@ namespace CryptoAnalyzer.CoinGecko
 						throw new Exception("Data was not taken at the same time");
 					}
 
-					dataPoints.Add(new CoinDetailDTO()
+					dataPoints.Add(new CryptoDataPoint()
 					{
 						LogDate = volume.Date,
 						Volume = volume.PointValue,
@@ -56,7 +57,7 @@ namespace CryptoAnalyzer.CoinGecko
 						MarketCap = marketCap.PointValue
 					});
 				}
-				await CoinDetail.BulkInsert(coin.Id, dataPoints);
+				await CryptoDataPoint.BulkInsert(coin.Id, dataPoints);
 			}
 			catch(Exception e)
 			{

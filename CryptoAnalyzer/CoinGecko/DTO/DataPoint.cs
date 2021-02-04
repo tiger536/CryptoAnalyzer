@@ -2,14 +2,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CryptoAnalyzer.CoinGecko.DTO
 {
 	[JsonArray]
 	public class DataPoint : ICollection<object>
 	{
-		public readonly List<object> Points = new List<object>();
+		private readonly List<object> Points = new List<object>();
 
 		public int Count => Points.Count;
 

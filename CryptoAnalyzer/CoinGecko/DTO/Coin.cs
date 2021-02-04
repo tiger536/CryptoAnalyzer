@@ -27,14 +27,14 @@ namespace CryptoAnalyzer.CoinGecko.DTO
 
 		public override bool Equals(object obj)
 		{
-			Coin fooItem = obj as Coin;
+			Coin coin = obj as Coin;
 
-			if (fooItem == null)
+			if (coin == null)
 			{
 				return false;
 			}
 
-			return fooItem.Code.Equals(this.Code) && fooItem.Name.Equals(this.Name) && fooItem.Symbol.Equals(this.Symbol);
+			return coin.Code.Equals(this.Code) && coin.Name.Equals(this.Name) && coin.Symbol.Equals(this.Symbol);
 		}
 
 		public static async Task<Coin> GetByCode(string code)
