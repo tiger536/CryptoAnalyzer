@@ -37,7 +37,7 @@ namespace CryptoAnalyzer.CoinGecko
                     ["from"] = lastUpdateTime.Value.ToUnixTimeSeconds().ToString(),
                     ["to"] = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
                 };
-                var coinDataByInterval = await _client.GetAsync<MarketChart>(QueryHelpers.AddQueryString("coins/bitcoin/market_chart/range", querystringParam));
+                var coinDataByInterval = await _client.GetAsync<MarketChart>(QueryHelpers.AddQueryString($"coins/{COIN_EXAMPLE}/market_chart/range", querystringParam));
                 var dataPoints = new List<CryptoDataPoint>();
                 for(int i = 0; i < coinDataByInterval.TotalVolumes.Count; i++)
                 {

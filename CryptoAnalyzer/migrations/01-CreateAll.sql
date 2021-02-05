@@ -14,7 +14,7 @@ CREATE TABLE dbo.CryptoDetails
     CoinId       INT NOT NULL,
 	LogDate      DATETIMEOFFSET NOT NULL,
 	Volume       DECIMAL(15,2) NOT NULL,
-	Price        DECIMAL(15,2) NOT NULL,
+	Price        DECIMAL(15,6) NOT NULL,
 	MarketCap    DECIMAL(15,2) NOT NULL,
 	CONSTRAINT [PK_dbo_CryptoDetails] PRIMARY KEY CLUSTERED 
 	(
