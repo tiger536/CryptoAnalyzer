@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model CoinViewModel
+@using Newtonsoft.Json;
+
+<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+
+<script>
+    window.onload = function () {
+
+        var chart = new CanvasJS.Chart("chartContainer", {
+            animationEnabled: true,
+            theme: "dark2",
+            title: {
+                text: "Daily Sales Data"
+            },
+            axisY: {
+                title: "USD",
+                titleFontSize: 24,
+                prefix: "$",
+                crosshair: {
+                    enabled: true,
+                    valueFormatString: "$#,##0.##",
+                    snapToDataPoint: true
+                }
+            },
+            axisX: {
+                crosshair: {
+                    enabled: true,
+                    snapToDataPoint: true
+                },
+                valueFormatString: "DD/MM HH:mm",
+            },
+            data: [{
+                type: "line",
+                yValueFormatString: "$#,##0.##",
+                xValueFormatString: "DD/MM/YYYY HH:mm",
+                xValueType: "dateTime",
+                dataPoints: @Html.Raw(JsonConvert.SerializeObject(Model.PriceSeries))
+            }]
+        });
+        chart.render();
+}
+</script>
+
+@section Scripts {
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+}
+

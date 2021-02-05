@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using CryptoAnalyzer.CoinGecko.DTO;
+using Dapper;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,7 +22,18 @@ SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 SELECT TOP 1 LogDate FROM dbo.CryptoDetails WHERE CoinId = @coinID ORDER BY Id DESC", new { coinID });
             }
         }
-         
+
+        public static async Task<List<CryptoDataPoint>> GetTimeframe(DateTimeOffset from, DateTimeOffset to, int coinID)
+        {
+            using (var conn = Context.OpenDatabaseConnection())
+            {
+                return (await conn.QueryAsync<CryptoDataPoint>(@"
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+SELECT LogDate, Volume, Price, MarketCap FROM dbo.CryptoDetails
+WHERE CoinId = @coinID AND LogDate BETWEEN @from AND @to ORDER BY Id ASC", new { from, to, coinID })).AsList();
+            }
+        }
+
         public static async Task BulkInsert(int coinID, List<CryptoDataPoint> dapaPoints)
         {
             using (var connection = Context.OpenDatabaseConnection())

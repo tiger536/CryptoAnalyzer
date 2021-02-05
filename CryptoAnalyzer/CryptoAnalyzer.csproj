@@ -7,7 +7,12 @@
   <ItemGroup>
     <Compile Remove="Test.cs" />
   </ItemGroup>
-
+  <ItemGroup>
+      <!-- Nest all <ViewName>.Model.cs files under their view -->
+      <Compile Update="Views\**\*.Model.cs">
+          <DependentUpon>$([System.String]::Copy(%(Filename)).Replace(".Model",".cshtml"))</DependentUpon>
+      </Compile>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.78" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />

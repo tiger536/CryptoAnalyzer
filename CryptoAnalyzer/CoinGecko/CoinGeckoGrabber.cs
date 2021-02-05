@@ -12,7 +12,7 @@ namespace CryptoAnalyzer.CoinGecko
 {
     public class CoinGeckoGrabber
     {
-        private string COIN_EXAMPLE = "bao-finance";
+        private string COIN_EXAMPLE = "bitcoin";
         private CancellationTokenSource _globalCancellation;
         private readonly IThrottledService _client;
         public CoinGeckoGrabber(IThrottledService client)
