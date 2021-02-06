@@ -7,6 +7,14 @@
   <ItemGroup>
     <Compile Remove="Test.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="compilerconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="compilerconfig.json" />
+  </ItemGroup>
   <ItemGroup>
       <!-- Nest all <ViewName>.Model.cs files under their view -->
       <Compile Update="Views\**\*.Model.cs">
