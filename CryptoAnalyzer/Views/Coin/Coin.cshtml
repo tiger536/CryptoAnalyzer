@@ -3,45 +3,29 @@
 }
 @model CoinViewModel
 @using Newtonsoft.Json;
+@using CryptoAnalyzer.Extensions;
 
-<div id="chartContainer" style="height: 370px; width: 100%;"></div>
-
+<div class="statsBlock">
+    <div class="statsLabel">
+        Price
+    </div>
+    <div class="statsItem">
+        <div class="statsValue">$ @Model.CoinRecap.LastPrice.RoundThirdSignificantDigit()</div>
+        <span class="statsVariation @(Model.CoinRecap.PriceVariation24h > 0 ? "up":"down")">
+            <i class="arrow @(Model.CoinRecap.PriceVariation24h > 0 ? "up":"down")"></i>
+            @(Math.Round(Model.CoinRecap.PriceVariation24h*100, 2))%
+        </span>
+    </div>
+</div>
+<div id="chartContainerPrice" class="chart mx-auto"></div>
+<div id="chartContainerVolume" class="chart mx-auto"></div>
 <script>
-    window.onload = function () {
-
-        var chart = new CanvasJS.Chart("chartContainer", {
-            animationEnabled: true,
-            theme: "dark2",
-            title: {
-                text: "Daily Sales Data"
-            },
-            axisY: {
-                title: "USD",
-                titleFontSize: 24,
-                prefix: "$",
-                crosshair: {
-                    enabled: true,
-                    valueFormatString: "$#,##0.##",
-                    snapToDataPoint: true
-                }
-            },
-            axisX: {
-                crosshair: {
-                    enabled: true,
-                    snapToDataPoint: true
-                },
-                valueFormatString: "DD/MM HH:mm",
-            },
-            data: [{
-                type: "line",
-                yValueFormatString: "$#,##0.##",
-                xValueFormatString: "DD/MM/YYYY HH:mm",
-                xValueType: "dateTime",
-                dataPoints: @Html.Raw(JsonConvert.SerializeObject(Model.PriceSeries))
-            }]
-        });
-        chart.render();
-}
+    $(document).ready(function () {
+        mySite.addNewMultiSeriesCanvasChart("chartContainerPrice", "Daily Price", @Html.Raw(JsonConvert.SerializeObject(Model.PriceSeries)),
+            "Today", @Html.Raw(JsonConvert.SerializeObject(Model.PriceSeriesYesterday)), "Yesterday");
+        mySite.addNewMultiSeriesCanvasChart("chartContainerVolume", "Daily Volume", @Html.Raw(JsonConvert.SerializeObject(Model.VolumeSeries)),
+            "Today", @Html.Raw(JsonConvert.SerializeObject(Model.VolumeSeriesYesterday)), "Yesterday");
+    });
 </script>
 
 @section Scripts {
