@@ -4,17 +4,63 @@
 @model CoinViewModel
 @using Newtonsoft.Json;
 @using CryptoAnalyzer.Extensions;
+@using System.Globalization
 
 <div class="statsBlock">
-    <div class="statsLabel">
-        Price
-    </div>
-    <div class="statsItem">
-        <div class="statsValue">$ @Model.CoinRecap.LastPrice.RoundThirdSignificantDigit()</div>
-        <span class="statsVariation @(Model.CoinRecap.PriceVariation24h > 0 ? "up":"down")">
-            <i class="arrow @(Model.CoinRecap.PriceVariation24h > 0 ? "up":"down")"></i>
-            @(Math.Round(Model.CoinRecap.PriceVariation24h*100, 2))%
-        </span>
+    <div class="row">
+        <div class="col">
+            <div class="statsLabel">
+                Price
+            </div>
+            <div class="statsItem">
+                <div class="statsValue">$ @Model.CoinRecap.LastPrice.RoundXSignificantDigit(3)</div>
+                <span class="statsVariation @(Model.CoinRecap.PriceVariation24h > 0 ? "up":"down")">
+                    <i class="arrow @(Model.CoinRecap.PriceVariation24h > 0 ? "up":"down")"></i>
+                    @(Math.Round(Model.CoinRecap.PriceVariation24h*100, 2))%
+                </span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="statsLabel">
+                Volume
+            </div>
+            <div class="statsItem">
+                <div class="statsSubLabel">$ @Model.CoinRecap.LastVolume.ToString("C2", CultureInfo.CurrentCulture)</div>
+                <span class="statsVariation @(Model.CoinRecap.VoumeVariation24h > 0 ? "up":"down")">
+                    <i class="arrow @(Model.CoinRecap.VoumeVariation24h > 0 ? "up":"down")"></i>
+                    @(Math.Round(Model.CoinRecap.VoumeVariation24h * 100, 2))%
+                </span>
+            </div>
+            <div class="statsLabel">
+                Market Cap
+            </div>
+            <div class="statsItem">
+                <div class="statsSubLabel">$ @Model.CoinRecap.LastMarketCap.ToString("C2", CultureInfo.CurrentCulture)</div>
+                <span class="statsVariation @(Model.CoinRecap.MarketCapVariation24h > 0 ? "up":"down")">
+                    <i class="arrow @(Model.CoinRecap.MarketCapVariation24h > 0 ? "up":"down")"></i>
+                    @(Math.Round(Model.CoinRecap.MarketCapVariation24h * 100, 2))%
+                </span>
+            </div>
+        </div>
+        <div class="col-5">
+            <div class="statsLabel">
+                Volume Variation
+            </div>
+            <div class="statsItem">
+                <div class="statsSubLabel">Last Hour</div>
+                <span class="statsVariation @(((Model.CoinRecap.LastVolume - Model.CoinRecap.LastHourAvgVolume) / Model.CoinRecap.LastHourAvgVolume) > 0 ? "up":"down")">
+                    <i class="arrow @(((Model.CoinRecap.LastVolume - Model.CoinRecap.LastHourAvgVolume) / Model.CoinRecap.LastHourAvgVolume) > 0 ? "up":"down")"></i>
+                    @(Math.Round(((Model.CoinRecap.LastVolume - Model.CoinRecap.LastHourAvgVolume) / Model.CoinRecap.LastHourAvgVolume) * 100, 2))%
+                </span>
+            </div>
+            <div class="statsItem">
+                <div class="statsSubLabel">Last 3 Hours</div>
+                <span class="statsVariation @(((Model.CoinRecap.LastVolume - Model.CoinRecap.Last3HoursAvgVolume) / Model.CoinRecap.Last3HoursAvgVolume) > 0 ? "up":"down")">
+                    <i class="arrow @(((Model.CoinRecap.LastVolume - Model.CoinRecap.Last3HoursAvgVolume) / Model.CoinRecap.Last3HoursAvgVolume) > 0 ? "up":"down")"></i>
+                    @(Math.Round(((Model.CoinRecap.LastVolume - Model.CoinRecap.Last3HoursAvgVolume) / Model.CoinRecap.Last3HoursAvgVolume) * 100, 2))%
+                </span>
+            </div>
+        </div>
     </div>
 </div>
 <div id="chartContainerPrice" class="chart mx-auto"></div>

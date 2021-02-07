@@ -4,13 +4,15 @@ namespace CryptoAnalyzer.Extensions
 {
 	public static class Extensions
 	{
-        public static decimal RoundThirdSignificantDigit(this decimal input)
+        public static decimal RoundXSignificantDigit(this decimal input, int x)
         {
+            int stop = 1;
+            if (x > 1) stop = (int) Math.Pow(10,x);
             int precision = 0;          
             if (input < 1)
             {
                 var val = input;
-                while (Math.Abs(val) < 100)
+                while (Math.Abs(val) < stop)
                 {
                     val *= 10;
                     precision++;

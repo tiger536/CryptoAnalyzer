@@ -19,7 +19,7 @@ namespace CryptoAnalyzer.Models
             {
                 return await conn.QuerySingleOrDefaultAsync<DateTimeOffset?>(@"
 SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-SELECT TOP 1 LogDate FROM dbo.CryptoDetails WHERE CoinId = @coinID ORDER BY Id DESC", new { coinID });
+SELECT TOP 1 LogDate FROM dbo.CryptoDetails WHERE CoinId = @coinID ORDER BY LogDate DESC", new { coinID });
             }
         }
 
@@ -30,7 +30,7 @@ SELECT TOP 1 LogDate FROM dbo.CryptoDetails WHERE CoinId = @coinID ORDER BY Id D
                 return (await conn.QueryAsync<CryptoDataPoint>(@"
 SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 SELECT LogDate, Volume, Price, MarketCap FROM dbo.CryptoDetails
-WHERE CoinId = @coinID AND LogDate BETWEEN @from AND @to ORDER BY Id ASC", new { from, to, coinID })).AsList();
+WHERE CoinId = @coinID AND LogDate BETWEEN @from AND @to ORDER BY LogDate ASC", new { from, to, coinID })).AsList();
             }
         }
 

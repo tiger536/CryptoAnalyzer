@@ -39,7 +39,7 @@ namespace CryptoAnalyzer.Controllers
                     VolumeSeries = volumeSeries,
                     PriceSeriesYesterday = priceSeriesYesterday,
                     VolumeSeriesYesterday = volumeSeriesYesterday,
-                    CoinRecap = CoinRecap.GetRecap(pointsRaw)
+                    CoinRecap = CoinRecap.GetRecap(pointsRaw, pointsRawYesterday)
                 });
             }
             return View();
