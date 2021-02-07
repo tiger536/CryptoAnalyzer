@@ -15,13 +15,13 @@ namespace CryptoAnalyzer.Models
 		public decimal VoumeVariation24h { get; set; }
 		public decimal MarketCapVariation24h { get; set; }
 		public decimal PriceVariation1h { get; set; }
-		public decimal YesterdayAvgVolume { get; set; }
+		public decimal? YesterdayAvgVolume { get; set; }
 		public decimal LastHourAvgVolume { get; set; }
 		public decimal Last3HoursAvgVolume { get; set; }
 
 		public static CoinRecap GetRecap(List<CryptoDataPoint> dataPointsToday, List<CryptoDataPoint> dataPointsYesterday)
 		{
-			var lastDayMeanVolume = dataPointsYesterday.Average(x => x.Volume);
+			var lastDayMeanVolume = dataPointsYesterday.Any() ? dataPointsYesterday.Average(x => x.Volume) : default;
 			var lastHourAvgVolume = dataPointsToday.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddMinutes(-70) && x.LogDate <= DateTimeOffset.UtcNow.AddMinutes(-10)).Average(x => x.Volume);
 			var last3HoursAvgVolume = dataPointsToday.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddHours(-4) && x.LogDate <= DateTimeOffset.UtcNow.AddHours(-1)).Average(x => x.Volume);
 			var last = dataPointsToday.Last();
