@@ -4,7 +4,9 @@
 	Code VARCHAR(50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
 	Symbol VARCHAR(10) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
 	Name VARCHAR(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-	MarketCapRank INT
+	MarketCapRank INT,
+	UnderSpotLight BIT NOT NULL,
+	 CONSTRAINT [DF_CryptoCurrency_UnderSpotLight] DEFAULT((0))
 )
 
 

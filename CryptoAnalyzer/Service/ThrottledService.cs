@@ -17,7 +17,6 @@ namespace CryptoAnalyzer.Service
         }
 
         public Task<T> GetAsync<T>(string partialPath)
-            where T : new()
         {
             var tcs = new TaskCompletionSource<T>();
 
@@ -28,7 +27,7 @@ namespace CryptoAnalyzer.Service
                 try
                 {
                     var response = await _httpClient.GetAsync(partialPath);
-                    if(response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+                    if(response.StatusCode == System.Net.HttpStatusCode.TooManyRequests || response.StatusCode == System.Net.HttpStatusCode.GatewayTimeout)
                     {
                         await Task.Delay(7000);
                         response = await _httpClient.GetAsync(partialPath);
@@ -40,9 +39,14 @@ namespace CryptoAnalyzer.Service
                 }
                 catch(Exception e)
                 {
-                    tcs.SetResult(new T());
+                    tcs.SetResult(default);
                 }
                 stopwatch.Stop();
+
+                if(stopwatch.Elapsed > TimeSpan.FromSeconds(25))
+				{
+                    //fuck
+				}
 
                 var delay = stopwatch.ElapsedMilliseconds > 1000 ? 0 : 1000 - stopwatch.ElapsedMilliseconds;
                 if (delay > 0)

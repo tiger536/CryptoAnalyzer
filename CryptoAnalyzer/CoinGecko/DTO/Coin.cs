@@ -70,6 +70,24 @@ FROM
             }
         }
 
+        public static async Task<List<Coin>> GetUnderSpotlight()
+        {
+            using (var conn = Context.OpenDatabaseConnection())
+            {
+                return (await conn.QueryAsync<Coin>(@"
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+SELECT
+    Id,
+    Code,
+    Symbol,
+    Name
+FROM
+    dbo.CryptoCurrency
+WHERE
+    UnderSpotlight = 1")).AsList();
+            }
+        }
+
         public static async Task Insert(Coin coin)
         {
             using (var conn = Context.OpenDatabaseConnection())
