@@ -14,6 +14,7 @@ namespace CryptoAnalyzer.CoinGecko
     {
         private CancellationTokenSource _globalCancellation;
         private readonly IThrottledService _client;
+        private double UPDATE_FREQUENCY = TimeSpan.FromMinutes(5).TotalMilliseconds;
         public SpotlightHandler(IThrottledService client)
         {
             _globalCancellation = new CancellationTokenSource();
@@ -25,10 +26,13 @@ namespace CryptoAnalyzer.CoinGecko
             try
             {
                 while (!_globalCancellation.Token.IsCancellationRequested)
-                {
+                {                  
                     var coins = await Coin.GetUnderSpotlight();
-                    foreach (var coin in coins)
+                    var waitTime = UPDATE_FREQUENCY / coins.Count;
+
+                    Parallel.ForEach(coins, async (coin, state, index) =>
                     {
+                        await Task.Delay(TimeSpan.FromMilliseconds(waitTime * index), _globalCancellation.Token);
                         var lastUpdateTime = await CryptoDataPoint.GetLastUpdateDate(coin.Id);
                         if (lastUpdateTime == null || (DateTimeOffset.UtcNow - lastUpdateTime > TimeSpan.FromDays(1)))
                             lastUpdateTime = DateTimeOffset.Now.AddMinutes(5).AddDays(-1);
@@ -40,12 +44,12 @@ namespace CryptoAnalyzer.CoinGecko
                             ["to"] = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
                         };
                         var coinDataByInterval = await _client.GetAsync<MarketChart>(QueryHelpers.AddQueryString($"coins/{coin.Code}/market_chart/range", querystringParam));
-                        if (coinDataByInterval is null) continue;
-                        if(coinDataByInterval.HasDifferentSizes)
-						{
+                        if (coinDataByInterval is null) return;
+                        if (coinDataByInterval.HasDifferentSizes)
+                        {
                             throw new Exception("Data was not taken at the same time");
                         }
-                        
+
                         var dataPoints = new List<CryptoDataPoint>();
                         for (int i = 0; i < coinDataByInterval.TotalVolumes.Count; i++)
                         {
@@ -62,8 +66,9 @@ namespace CryptoAnalyzer.CoinGecko
                             });
                         }
                         await CryptoDataPoint.BulkInsert(coin.Id, dataPoints);
-                    }
-                    await Task.Delay(TimeSpan.FromMinutes(5), _globalCancellation.Token);
+                    });
+
+                    await Task.Delay((int)UPDATE_FREQUENCY, _globalCancellation.Token);
                 }
             }
             catch(Exception e)

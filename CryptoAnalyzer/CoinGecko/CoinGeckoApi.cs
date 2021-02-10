@@ -22,7 +22,7 @@ namespace CryptoAnalyzer.CoinGecko
         {        
             Task.Run(() => _grabber.GrabAsync());
             Task.Run(() => _spotlighter.GrabAsync());
-            //Task.Run(() => _coinListGrabber.GrabAsync());
+            Task.Run(() => _coinListGrabber.GrabAsync());
 
             return Task.CompletedTask;
         }

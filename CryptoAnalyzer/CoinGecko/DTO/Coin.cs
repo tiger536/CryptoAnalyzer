@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,21 +20,38 @@ namespace CryptoAnalyzer.CoinGecko.DTO
         public int? MarketCapRank { get; set; }
         [JsonProperty("public_interest_score")]
         public double PublicInterestScore { get; set; }
+        public DateTimeOffset? DateAdded { get; set; }
 
+        public bool IsUseless()
+        => Code.Contains("token", StringComparison.InvariantCulture)
+                || Code.Contains("crossover", StringComparison.InvariantCulture)
+                || Name.Contains("USD")
+                || Name.Contains("BTC")
+				|| Name.Contains("ETH")
+                || Name.Contains("Cash")
+                || Name.Contains("yield", StringComparison.InvariantCulture)
+                || Code.Contains("coinbase", StringComparison.InvariantCulture)
+                || Code.Contains("adjusted", StringComparison.InvariantCulture)
+                || (Name.Contains("ethereum", StringComparison.InvariantCulture) && !Name.Equals("ethereum", StringComparison.InvariantCulture))
+                || (Name.Contains("bitcoin", StringComparison.InvariantCulture) && !Name.Equals("bitcoin", StringComparison.InvariantCulture));
+        
         public override int GetHashCode()
         {
-            return System.HashCode.Combine(Code, Symbol, Name);
+            return HashCode.Combine(Code, Symbol, Name);
         }
 
         public override bool Equals(object obj)
         {
-            Coin coin = obj as Coin;
+            var coin = obj as Coin;
 
             if (coin == null)
             {
                 return false;
             }
+            if(coin.Code.Equals("hedpay"))
+			{
 
+			}
             return coin.Code.Equals(this.Code) && coin.Name.Equals(this.Name) && coin.Symbol.Equals(this.Symbol);
         }
 
@@ -47,7 +65,8 @@ SELECT
     Id,
     Code,
     Symbol,
-    Name
+    Name,
+    DateAdded
 FROM
     dbo.CryptoCurrency
 WHERE Code = @code", new { code = new DbString() { IsAnsi = true, Value = code, Length = 50 } });
@@ -64,7 +83,8 @@ SELECT
     Id,
     Code,
     Symbol,
-    Name
+    Name,
+    DateAdded
 FROM
     dbo.CryptoCurrency")).ToHashSet();
             }
@@ -80,7 +100,8 @@ SELECT
     Id,
     Code,
     Symbol,
-    Name
+    Name,
+    DateAdded
 FROM
     dbo.CryptoCurrency
 WHERE
@@ -93,9 +114,9 @@ WHERE
             using (var conn = Context.OpenDatabaseConnection())
             {
                 await conn.ExecuteAsync(@"
-INSERT INTO dbo.CryptoCurrency(Code, Symbol, Name, MarketCapRank)
+INSERT INTO dbo.CryptoCurrency(Code, Symbol, Name, MarketCapRank, DateAdded)
 VALUES
-(@Code, @Symbol, @Name, @MarketCapRank)", new
+(@Code, @Symbol, @Name, @MarketCapRank, SYSDATETIMEOFFSET())", new
                 {
                     Code = new DbString()
                     {
@@ -106,8 +127,8 @@ VALUES
                     Symbol = new DbString()
                     {
                         Value = coin.Symbol,
-                        IsAnsi = true,
-                        Length = 10
+                        IsAnsi = false,
+                        Length = 50
                     },
                     Name = new DbString()
                     {

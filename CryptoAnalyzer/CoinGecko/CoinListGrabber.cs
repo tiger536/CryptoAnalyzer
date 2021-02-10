@@ -36,9 +36,8 @@ namespace CryptoAnalyzer.CoinGecko
                 try
                 {
                     var dbCoins = await Coin.GetAll();
-                    var allCoins = (await _client.GetAsync<List<Coin>>("coins/list"))
-                        .Where(x => !x.Code.Contains("token", StringComparison.InvariantCulture) && !x.Code.Contains("crossover", StringComparison.InvariantCulture));
-                    var newCoins = allCoins.Where(x => !dbCoins.Contains(x)).ToList();
+                    var allCoins = await _client.GetAsync<List<Coin>>("coins/list");
+                    var newCoins = allCoins.Where(x => !dbCoins.Contains(x) && !x.IsUseless()).ToList();
 
                     foreach (var coin in newCoins)
                     {
@@ -52,7 +51,7 @@ namespace CryptoAnalyzer.CoinGecko
                 {
 
                 }
-                await Task.Delay(TimeSpan.FromDays(1));
+                await Task.Delay(TimeSpan.FromHours(3));
             }
         }
 

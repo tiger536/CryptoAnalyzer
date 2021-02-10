@@ -49,8 +49,8 @@ namespace CryptoAnalyzer.Service
 				}
 
                 var delay = stopwatch.ElapsedMilliseconds > 1000 ? 0 : 1000 - stopwatch.ElapsedMilliseconds;
-                if (delay > 0)
-                    await Task.Delay((int)delay);
+                if (delay < 625) delay = 625;
+                await Task.Delay((int)delay);
 
                 _throttler.Release();
             });
