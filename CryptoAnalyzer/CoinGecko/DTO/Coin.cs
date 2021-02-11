@@ -109,6 +109,25 @@ WHERE
             }
         }
 
+        public static async Task<List<Coin>> GetNewest(DateTimeOffset from)
+        {
+            using (var conn = Context.OpenDatabaseConnection())
+            {
+                return (await conn.QueryAsync<Coin>(@"
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+SELECT
+    Id,
+    Code,
+    Symbol,
+    Name,
+    DateAdded
+FROM
+    dbo.CryptoCurrency
+WHERE
+    DateAdded > @from", new { from })).AsList();
+            }
+        }
+
         public static async Task Insert(Coin coin)
         {
             using (var conn = Context.OpenDatabaseConnection())

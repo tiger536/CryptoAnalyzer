@@ -1,8 +1,9 @@
-﻿using CryptoAnalyzer.Models;
+﻿using CryptoAnalyzer.CoinGecko.DTO;
+using CryptoAnalyzer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using StackExchange.Exceptional;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,10 +19,17 @@ namespace CryptoAnalyzer.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var spotlight = await Coin.GetUnderSpotlight();
+            var newest = await Coin.GetNewest(DateTimeOffset.UtcNow.AddDays(-3));
+            return View(new IndexViewModel()
+            {
+                Newest = newest,
+                Spotlight = spotlight
+            });
         }
+        public async Task Exceptions() => await ExceptionalMiddleware.HandleRequestAsync(HttpContext).ConfigureAwait(false);
 
         public IActionResult Privacy()
         {

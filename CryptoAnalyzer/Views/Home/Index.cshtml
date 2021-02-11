@@ -1,8 +1,23 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@model IndexViewModel
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container">
+    <div class="row">
+        <div class="list-group col-sm">
+            <div class="navbar-brand"><p class="secondary-heading">Spotlight</p></div>
+            @foreach (var importantCoin in Model.Spotlight.OrderBy(x => x.Name).ToList())
+            {
+                <a href="~/Coins/@importantCoin.Code" class="list-group-item list-group-item-action">@importantCoin.Name</a>
+            }
+        </div>
+        <div class="list-group col-sm">
+            <div class="navbar-brand"><p class="secondary-heading">Newest Coin</p></div>
+            @foreach (var newCoin in Model.Newest.OrderByDescending(x => x.DateAdded).ToList())
+            {
+                <a href="~/Coins/@newCoin.Code" class="list-group-item list-group-item-action">@newCoin.Name</a>
+            }
+        </div>
+    </div>
 </div>

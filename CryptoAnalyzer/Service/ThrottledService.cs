@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using StackExchange.Exceptional;
 using System;
 using System.Diagnostics;
 using System.Net.Http;
@@ -39,6 +40,7 @@ namespace CryptoAnalyzer.Service
                 }
                 catch(Exception e)
                 {
+                    await e.LogAsync(null);
                     tcs.SetResult(default);
                 }
                 stopwatch.Stop();

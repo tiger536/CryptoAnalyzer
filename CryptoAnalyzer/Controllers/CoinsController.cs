@@ -28,7 +28,7 @@ namespace CryptoAnalyzer.Controllers
                 var volumeSeriesYesterday = new List<Models.DataPoint>();
                 foreach (var point in pointsRawYesterday)
                 {
-                    //AddDaysis a cheap trick to display all data points on the same scale
+                    //AddDays is a cheap trick to display all data points on the same scale
                     priceSeriesYesterday.Add(new Models.DataPoint(point.LogDate.AddDays(1).ToUnixTimeMilliseconds(), point.Price));
                     volumeSeriesYesterday.Add(new Models.DataPoint(point.LogDate.AddDays(1).ToUnixTimeMilliseconds(), point.Volume));
                 }
@@ -42,7 +42,8 @@ namespace CryptoAnalyzer.Controllers
                     CoinRecap = CoinRecap.GetRecap(pointsRaw, pointsRawYesterday)
                 });
             }
-            return View();
+            else
+                return NotFound();
         }
     }
 }

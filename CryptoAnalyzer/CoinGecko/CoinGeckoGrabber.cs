@@ -3,6 +3,7 @@ using CryptoAnalyzer.DTO.CoinGecko;
 using CryptoAnalyzer.Models;
 using CryptoAnalyzer.Service;
 using Microsoft.AspNetCore.WebUtilities;
+using StackExchange.Exceptional;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -61,7 +62,7 @@ namespace CryptoAnalyzer.CoinGecko
             }
             catch(Exception e)
             {
-
+                e.LogNoContext();
             }
             return;
         }

@@ -111,3 +111,6 @@ body {
   line-height: 42px;
   margin-right: 16px;
 }
+.secondary-heading {
+  color: green;
+}
