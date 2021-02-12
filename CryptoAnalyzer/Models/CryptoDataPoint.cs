@@ -1,5 +1,4 @@
-﻿using CryptoAnalyzer.CoinGecko.DTO;
-using Dapper;
+﻿using Dapper;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

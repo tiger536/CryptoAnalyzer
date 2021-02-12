@@ -1,11 +1,11 @@
-﻿using CryptoAnalyzer.CoinGecko.DTO;
-using CryptoAnalyzer.DTO.CoinGecko;
+﻿using CryptoAnalyzer.DTO.CoinGecko;
 using CryptoAnalyzer.Models;
 using CryptoAnalyzer.Service;
 using Microsoft.AspNetCore.WebUtilities;
 using StackExchange.Exceptional;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,9 +14,9 @@ namespace CryptoAnalyzer.CoinGecko
 {
     public class SpotlightHandler
     {
-        private CancellationTokenSource _globalCancellation;
+        private readonly CancellationTokenSource _globalCancellation;
         private readonly IThrottledService _client;
-        private double UPDATE_FREQUENCY = TimeSpan.FromMinutes(5).TotalMilliseconds;
+        private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(5).TotalMilliseconds;
         public SpotlightHandler(IThrottledService client)
         {
             _globalCancellation = new CancellationTokenSource();
@@ -35,8 +35,10 @@ namespace CryptoAnalyzer.CoinGecko
 
                     var task = Task.Run(async () =>
                     {
+                        var stopwatch = new Stopwatch();
                         foreach(var coin in coins)
-						{                           
+						{
+                            stopwatch.Start();
                             var lastUpdateTime = await CryptoDataPoint.GetLastUpdateDate(coin.Id);
                             if (lastUpdateTime == null || (DateTimeOffset.UtcNow - lastUpdateTime > TimeSpan.FromDays(1)))
                                 lastUpdateTime = DateTimeOffset.Now.AddMinutes(5).AddDays(-1);
@@ -69,8 +71,14 @@ namespace CryptoAnalyzer.CoinGecko
                                     MarketCap = marketCap.PointValue
                                 });
                             }
+                            stopwatch.Stop();
+
                             await CryptoDataPoint.BulkInsert(coin.Id, dataPoints);
-                            await Task.Delay(TimeSpan.FromMilliseconds(waitTime), _globalCancellation.Token);
+                            if(stopwatch.ElapsedMilliseconds < waitTime)
+							{
+                                await Task.Delay(TimeSpan.FromMilliseconds(waitTime - stopwatch.ElapsedMilliseconds), _globalCancellation.Token);
+                            }
+                            stopwatch.Reset();
                         }
                     });
 
