@@ -1,40 +1,35 @@
 ﻿using Dapper;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CryptoAnalyzer.CoinGecko.DTO
+namespace CryptoAnalyzer.Models
 {
-    public class Coin
-    {
+	public class Coin
+	{
         public int Id { get; set; }
-        [JsonProperty("id")]
         public string Code { get; set; }
-        [JsonProperty("symbol")]
         public string Symbol { get; set; }
-        [JsonProperty("name")]
         public string Name { get; set; }
-        [JsonProperty("market_cap_rank")] 
         public int? MarketCapRank { get; set; }
-        [JsonProperty("public_interest_score")]
-        public double PublicInterestScore { get; set; }
         public DateTimeOffset? DateAdded { get; set; }
+        public bool UnderSpotlight { get; set; }
 
         public bool IsUseless()
-        => Code.Contains("token", StringComparison.InvariantCulture)
-                || Code.Contains("crossover", StringComparison.InvariantCulture)
-                || Name.Contains("USD")
-                || Name.Contains("BTC")
-				|| Name.Contains("ETH")
-                || Name.Contains("Cash")
-                || Name.Contains("yield", StringComparison.InvariantCulture)
-                || Code.Contains("coinbase", StringComparison.InvariantCulture)
-                || Code.Contains("adjusted", StringComparison.InvariantCulture)
-                || (Name.Contains("ethereum", StringComparison.InvariantCulture) && !Name.Equals("ethereum", StringComparison.InvariantCulture))
-                || (Name.Contains("bitcoin", StringComparison.InvariantCulture) && !Name.Equals("bitcoin", StringComparison.InvariantCulture));
-        
+        => Code.Contains("token", StringComparison.InvariantCultureIgnoreCase)
+            || Code.Contains("crossover", StringComparison.InvariantCultureIgnoreCase)
+            || Name.Contains("USD")
+            || Name.Contains("BTC")
+            || Name.Contains("ETH")
+            || Name.Contains("Cash")
+            || Name.Contains("yield", StringComparison.InvariantCultureIgnoreCase)
+            || Name.Contains("dollar", StringComparison.InvariantCultureIgnoreCase)
+            || Code.Contains("coinbase", StringComparison.InvariantCultureIgnoreCase)
+            || Code.Contains("adjusted", StringComparison.InvariantCultureIgnoreCase)
+            || (Name.Contains("ether", StringComparison.InvariantCultureIgnoreCase) && !Name.Equals("ethereum", StringComparison.InvariantCultureIgnoreCase))
+            || (Name.Contains("bitcoin", StringComparison.InvariantCultureIgnoreCase) && !Name.Equals("bitcoin", StringComparison.InvariantCultureIgnoreCase));
+
         public override int GetHashCode()
         {
             return HashCode.Combine(Code, Symbol, Name);
@@ -48,10 +43,7 @@ namespace CryptoAnalyzer.CoinGecko.DTO
             {
                 return false;
             }
-            if(coin.Code.Equals("hedpay"))
-			{
 
-			}
             return coin.Code.Equals(this.Code) && coin.Name.Equals(this.Name) && coin.Symbol.Equals(this.Symbol);
         }
 
@@ -66,7 +58,8 @@ SELECT
     Code,
     Symbol,
     Name,
-    DateAdded
+    DateAdded,
+    UnderSpotlight
 FROM
     dbo.CryptoCurrency
 WHERE Code = @code", new { code = new DbString() { IsAnsi = true, Value = code, Length = 50 } });
@@ -84,13 +77,14 @@ SELECT
     Code,
     Symbol,
     Name,
-    DateAdded
+    DateAdded,
+    UnderSpotlight
 FROM
     dbo.CryptoCurrency")).ToHashSet();
             }
         }
 
-        public static async Task<List<Coin>> GetUnderSpotlight()
+        public static async Task<List<Coin>> GetImportantCoins(DateTimeOffset from)
         {
             using (var conn = Context.OpenDatabaseConnection())
             {
@@ -101,30 +95,13 @@ SELECT
     Code,
     Symbol,
     Name,
-    DateAdded
+    DateAdded,
+    UnderSpotlight
 FROM
     dbo.CryptoCurrency
 WHERE
-    UnderSpotlight = 1")).AsList();
-            }
-        }
-
-        public static async Task<List<Coin>> GetNewest(DateTimeOffset from)
-        {
-            using (var conn = Context.OpenDatabaseConnection())
-            {
-                return (await conn.QueryAsync<Coin>(@"
-SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-SELECT
-    Id,
-    Code,
-    Symbol,
-    Name,
-    DateAdded
-FROM
-    dbo.CryptoCurrency
-WHERE
-    DateAdded > @from", new { from })).AsList();
+    DateAdded > @from
+    OR UnderSpotlight = 1", new { from })).AsList();
             }
         }
 

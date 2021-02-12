@@ -1,4 +1,5 @@
 ﻿using CryptoAnalyzer.CoinGecko.DTO;
+using CryptoAnalyzer.Models;
 using CryptoAnalyzer.Service;
 using Microsoft.AspNetCore.WebUtilities;
 using StackExchange.Exceptional;
@@ -37,8 +38,14 @@ namespace CryptoAnalyzer.CoinGecko
                 try
                 {
                     var dbCoins = await Coin.GetAll();
-                    var allCoins = await _client.GetAsync<List<Coin>>("coins/list");
-                    var newCoins = allCoins.Where(x => !dbCoins.Contains(x) && !x.IsUseless()).ToList();
+                    var allCoins = await _client.GetAsync<List<GeckoCoin>>("coins/list");
+                    var newCoins = allCoins.Select(x=> new Coin()
+                    {
+                        Code = x.Id,
+                        Name = x.Name,
+                        MarketCapRank = x.MarketCapRank,
+                        Symbol = x.Symbol
+                    }).Where(x => !dbCoins.Contains(x) && !x.IsUseless()).ToList();
 
                     foreach (var coin in newCoins)
                     {
@@ -46,7 +53,6 @@ namespace CryptoAnalyzer.CoinGecko
                         coin.MarketCapRank = coinDetail.MarketCapRank;
                         await Coin.Insert(coin);                        
                     }
-
                 }
                 catch (Exception e)
                 {

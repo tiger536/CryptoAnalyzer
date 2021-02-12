@@ -21,12 +21,10 @@ namespace CryptoAnalyzer.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var spotlight = await Coin.GetUnderSpotlight();
-            var newest = await Coin.GetNewest(DateTimeOffset.UtcNow.AddDays(-3));
+            var coins = (await Coin.GetImportantCoins(DateTimeOffset.UtcNow.AddDays(-3))).Where(x => !x.IsUseless()).ToList();
             return View(new IndexViewModel()
             {
-                Newest = newest,
-                Spotlight = spotlight
+                Coins = coins
             });
         }
         public async Task Exceptions() => await ExceptionalMiddleware.HandleRequestAsync(HttpContext).ConfigureAwait(false);

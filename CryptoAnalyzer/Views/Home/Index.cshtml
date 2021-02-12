@@ -7,14 +7,14 @@
     <div class="row">
         <div class="list-group col-sm">
             <div class="navbar-brand"><p class="secondary-heading">Spotlight</p></div>
-            @foreach (var importantCoin in Model.Spotlight.OrderBy(x => x.Name).ToList())
+            @foreach (var importantCoin in Model.Coins.Where(x => x.UnderSpotlight).OrderBy(x => x.Name).ToList())
             {
                 <a href="~/Coins/@importantCoin.Code" class="list-group-item list-group-item-action">@importantCoin.Name</a>
             }
         </div>
         <div class="list-group col-sm">
             <div class="navbar-brand"><p class="secondary-heading">Newest Coin</p></div>
-            @foreach (var newCoin in Model.Newest.OrderByDescending(x => x.DateAdded).ToList())
+            @foreach (var newCoin in Model.Coins.Where(x => !x.UnderSpotlight).OrderByDescending(x => x.DateAdded).ToList())
             {
                 <a href="~/Coins/@newCoin.Code" class="list-group-item list-group-item-action">@newCoin.Name</a>
             }

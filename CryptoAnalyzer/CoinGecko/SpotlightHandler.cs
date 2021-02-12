@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using StackExchange.Exceptional;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +29,8 @@ namespace CryptoAnalyzer.CoinGecko
             {
                 while (!_globalCancellation.Token.IsCancellationRequested)
                 {                  
-                    var coins = await Coin.GetUnderSpotlight();
+                    var coins = (await Coin.GetImportantCoins(DateTimeOffset.UtcNow.AddDays(-3))).Where(x => !x.IsUseless()).ToList();
+
                     var waitTime = UPDATE_FREQUENCY / coins.Count;
 
                     var task = Task.Run(async () =>

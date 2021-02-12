@@ -48,16 +48,16 @@
             </div>
             <div class="statsItem">
                 <div class="statsSubLabel">Last Hour</div>
-                <span class="statsVariation @(((Model.CoinRecap.LastVolume - Model.CoinRecap.LastHourAvgVolume) / Model.CoinRecap.LastHourAvgVolume) > 0 ? "up":"down")">
-                    <i class="arrow @(((Model.CoinRecap.LastVolume - Model.CoinRecap.LastHourAvgVolume) / Model.CoinRecap.LastHourAvgVolume) > 0 ? "up":"down")"></i>
-                    @(Math.Round(((Model.CoinRecap.LastVolume - Model.CoinRecap.LastHourAvgVolume) / Model.CoinRecap.LastHourAvgVolume) * 100, 2))%
+                <span class="statsVariation @(Model.CoinRecap.LastHourVolumeVariation > 0 ? "up":"down")">
+                    <i class="arrow @(Model.CoinRecap.LastHourVolumeVariation > 0 ? "up":"down")"></i>
+                    @Math.Round(Model.CoinRecap.LastHourVolumeVariation * 100, 2)%
                 </span>
             </div>
             <div class="statsItem">
                 <div class="statsSubLabel">Last 3 Hours</div>
-                <span class="statsVariation @(((Model.CoinRecap.LastVolume - Model.CoinRecap.Last3HoursAvgVolume) / Model.CoinRecap.Last3HoursAvgVolume) > 0 ? "up":"down")">
-                    <i class="arrow @(((Model.CoinRecap.LastVolume - Model.CoinRecap.Last3HoursAvgVolume) / Model.CoinRecap.Last3HoursAvgVolume) > 0 ? "up":"down")"></i>
-                    @(Math.Round(((Model.CoinRecap.LastVolume - Model.CoinRecap.Last3HoursAvgVolume) / Model.CoinRecap.Last3HoursAvgVolume) * 100, 2))%
+                <span class="statsVariation @(Model.CoinRecap.Last3HoursVolumeVariation > 0 ? "up":"down")">
+                    <i class="arrow @(Model.CoinRecap.Last3HoursVolumeVariation > 0 ? "up":"down")"></i>
+                    @Math.Round(Model.CoinRecap.Last3HoursVolumeVariation * 100, 2)%
                 </span>
             </div>
         </div>
