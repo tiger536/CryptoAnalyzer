@@ -22,8 +22,7 @@ namespace CryptoAnalyzer.CoinGecko
         {
             _globalCancellation = new CancellationTokenSource();
             _client = client;
-            _telegramBot = telegramBot;
-            
+            _telegramBot = telegramBot;          
         }
 
         public async Task GrabAsync()
@@ -73,11 +72,13 @@ namespace CryptoAnalyzer.CoinGecko
                                     Price = price.PointValue,
                                     MarketCap = marketCap.PointValue
                                 });
-                            }
-                            stopwatch.Stop();
-
+                            }                           
                             await CryptoDataPoint.BulkInsert(coin.Id, dataPoints);
-                            if(stopwatch.ElapsedMilliseconds < waitTime)
+
+                            await ParseDataAsync(coin);
+
+                            stopwatch.Stop();
+                            if (stopwatch.ElapsedMilliseconds < waitTime)
 							{
                                 await Task.Delay(TimeSpan.FromMilliseconds(waitTime - stopwatch.ElapsedMilliseconds), _globalCancellation.Token);
                             }
@@ -92,6 +93,21 @@ namespace CryptoAnalyzer.CoinGecko
             {
                 e.LogNoContext();
             }
+        }
+
+        private async Task ParseDataAsync(Coin coin)
+		{
+            var data = await CryptoDataPoint.GetTimeframe(DateTimeOffset.UtcNow.AddDays(-7), DateTimeOffset.UtcNow, coin.Id);
+            var today = data.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddDays(-1)).ToList();
+            var yesterday = data.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddDays(-2) && x.LogDate < DateTimeOffset.UtcNow.AddDays(-1)).ToList();
+            var lastPoint = data.Last();
+
+            var recap = CoinRecap.GetRecap(today, yesterday);
+
+            if(recap.LastHourVolumeVariation >= 0.3M || recap.Last3HoursVolumeVariation >= 0.40M || recap.Last9HoursVolumeVariation >= 0.45M)
+			{
+                await _telegramBot.SendMessage(coin.Code);
+			}
         }
 
         public void Cancel()

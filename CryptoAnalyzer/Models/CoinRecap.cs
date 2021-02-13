@@ -18,8 +18,10 @@ namespace CryptoAnalyzer.Models
 		public decimal? YesterdayAvgVolume { get; set; }
 		public decimal LastHourAvgVolume { get; set; }
 		public decimal Last3HoursAvgVolume { get; set; }
+		public decimal Last9HoursAvgVolume { get; set; }
 		public decimal LastHourVolumeVariation => LastHourAvgVolume > 0 ? ((LastVolume - LastHourAvgVolume) / LastHourAvgVolume) : default;
 		public decimal Last3HoursVolumeVariation => Last3HoursAvgVolume > 0 ? ((LastVolume - Last3HoursAvgVolume) / Last3HoursAvgVolume) : default;
+		public decimal Last9HoursVolumeVariation => Last9HoursAvgVolume > 0 ? ((LastVolume - Last9HoursAvgVolume) / Last9HoursAvgVolume) : default;
 
 		public static CoinRecap GetRecap(List<CryptoDataPoint> dataPointsToday, List<CryptoDataPoint> dataPointsYesterday)
 		{
@@ -28,9 +30,12 @@ namespace CryptoAnalyzer.Models
 			var lastHourPoint = dataPointsToday.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddMinutes(-70) && x.LogDate <= DateTimeOffset.UtcNow.AddMinutes(-10));
 			var lastHourAvgVolume = lastHourPoint.Any() ? lastHourPoint.Average(x => x.Volume) : default;
 
-			var last3HoursPoint = dataPointsToday.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddHours(-4) && x.LogDate <= DateTimeOffset.UtcNow.AddHours(-1));
+			var last3HoursPoint = dataPointsToday.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddHours(-4) && x.LogDate <= DateTimeOffset.UtcNow.AddMinutes(-30));
 			var last3HoursAvgVolume = last3HoursPoint.Any() ? last3HoursPoint.Average(x => x.Volume) : default;
-			
+
+			var last9HoursPoint = dataPointsToday.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddHours(-10) && x.LogDate <= DateTimeOffset.UtcNow.AddHours(-1));
+			var last9HoursAvgVolume = last9HoursPoint.Any() ? last9HoursPoint.Average(x => x.Volume) : default;
+
 			var last = dataPointsToday.Last();
 			var first = dataPointsToday.First();
 			var h1Ago = dataPointsToday.First(x => x.LogDate >= last.LogDate.AddHours(-1));
@@ -47,7 +52,8 @@ namespace CryptoAnalyzer.Models
 				PriceVariation1h = (last.Price - h1Ago.Price) / h1Ago.Price,
 				YesterdayAvgVolume = lastDayMeanVolume,
 				LastHourAvgVolume = lastHourAvgVolume,
-				Last3HoursAvgVolume = last3HoursAvgVolume
+				Last3HoursAvgVolume = last3HoursAvgVolume,
+				Last9HoursAvgVolume = last9HoursAvgVolume
 			};
 			return recap;
 		}
