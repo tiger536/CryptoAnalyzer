@@ -12,7 +12,7 @@ namespace CryptoAnalyzer.Models
         public decimal Price { get; set; }
         public decimal MarketCap { get; set; }
 
-        public static async Task<DateTimeOffset?> GetLastUpdateDate(int coinID)
+        public static async Task<DateTimeOffset?> GetLastUpdateDateAsync(int coinID)
         {
             using (var conn = Context.OpenDatabaseConnection())
             {
@@ -22,7 +22,7 @@ SELECT TOP 1 LogDate FROM dbo.CryptoDetails WHERE CoinId = @coinID ORDER BY LogD
             }
         }
 
-        public static async Task<List<CryptoDataPoint>> GetTimeframe(DateTimeOffset from, DateTimeOffset to, int coinID)
+        public static async Task<List<CryptoDataPoint>> GetTimeframeAsync(DateTimeOffset from, DateTimeOffset to, int coinID)
         {
             using (var conn = Context.OpenDatabaseConnection())
             {
@@ -33,7 +33,7 @@ WHERE CoinId = @coinID AND LogDate BETWEEN @from AND @to ORDER BY LogDate ASC", 
             }
         }
 
-        public static async Task BulkInsert(int coinID, List<CryptoDataPoint> dapaPoints)
+        public static async Task BulkInsertAsync(int coinID, List<CryptoDataPoint> dapaPoints)
         {
             using (var connection = Context.OpenDatabaseConnection())
             {

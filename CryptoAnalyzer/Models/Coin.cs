@@ -66,7 +66,7 @@ WHERE Code = @code", new { code = new DbString() { IsAnsi = true, Value = code, 
             }
         }
 
-        public static async Task<HashSet<Coin>> GetAll()
+        public static async Task<HashSet<Coin>> GetAllAsync()
         {
             using (var conn = Context.OpenDatabaseConnection())
             {
@@ -84,7 +84,7 @@ FROM
             }
         }
 
-        public static async Task<List<Coin>> GetImportantCoins(DateTimeOffset from)
+        public static async Task<List<Coin>> GetImportantCoinsAsync(DateTimeOffset from)
         {
             using (var conn = Context.OpenDatabaseConnection())
             {
@@ -105,7 +105,7 @@ WHERE
             }
         }
 
-        public static async Task Insert(Coin coin)
+        public static async Task InsertAsync(Coin coin)
         {
             using (var conn = Context.OpenDatabaseConnection())
             {

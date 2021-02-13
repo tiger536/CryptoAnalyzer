@@ -31,7 +31,7 @@ namespace CryptoAnalyzer.CoinGecko
             {
                 while (!_globalCancellation.Token.IsCancellationRequested)
                 {                  
-                    var coins = (await Coin.GetImportantCoins(DateTimeOffset.UtcNow.AddDays(-3))).Where(x => !x.IsUseless()).ToList();
+                    var coins = (await Coin.GetImportantCoinsAsync(DateTimeOffset.UtcNow.AddDays(-3))).Where(x => !x.IsUseless()).ToList();
 
                     var waitTime = UPDATE_FREQUENCY / coins.Count;
 
@@ -41,7 +41,7 @@ namespace CryptoAnalyzer.CoinGecko
                         foreach(var coin in coins)
 						{
                             stopwatch.Start();
-                            var lastUpdateTime = await CryptoDataPoint.GetLastUpdateDate(coin.Id);
+                            var lastUpdateTime = await CryptoDataPoint.GetLastUpdateDateAsync(coin.Id);
                             if (lastUpdateTime == null || (DateTimeOffset.UtcNow - lastUpdateTime > TimeSpan.FromDays(1)))
                                 lastUpdateTime = DateTimeOffset.Now.AddMinutes(5).AddDays(-1);
 
@@ -73,7 +73,7 @@ namespace CryptoAnalyzer.CoinGecko
                                     MarketCap = marketCap.PointValue
                                 });
                             }                           
-                            await CryptoDataPoint.BulkInsert(coin.Id, dataPoints);
+                            await CryptoDataPoint.BulkInsertAsync(coin.Id, dataPoints);
 
                             await ParseDataAsync(coin);
 
@@ -97,7 +97,7 @@ namespace CryptoAnalyzer.CoinGecko
 
         private async Task ParseDataAsync(Coin coin)
 		{
-            var data = await CryptoDataPoint.GetTimeframe(DateTimeOffset.UtcNow.AddDays(-7), DateTimeOffset.UtcNow, coin.Id);
+            var data = await CryptoDataPoint.GetTimeframeAsync(DateTimeOffset.UtcNow.AddDays(-7), DateTimeOffset.UtcNow, coin.Id);
             var today = data.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddDays(-1)).ToList();
             var yesterday = data.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddDays(-2) && x.LogDate < DateTimeOffset.UtcNow.AddDays(-1)).ToList();
             var lastPoint = data.Last();
@@ -106,7 +106,7 @@ namespace CryptoAnalyzer.CoinGecko
 
             if(recap.LastHourVolumeVariation >= 0.3M || recap.Last3HoursVolumeVariation >= 0.40M || recap.Last9HoursVolumeVariation >= 0.45M)
 			{
-                await _telegramBot.SendMessage(coin.Code);
+                await _telegramBot.SendMessageAsync(coin.Code);
 			}
         }
 

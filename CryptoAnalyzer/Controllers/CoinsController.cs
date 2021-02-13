@@ -14,7 +14,7 @@ namespace CryptoAnalyzer.Controllers
             var coin = await Coin.GetByCode(code);
             if (coin is object)
             {
-                var pointsRaw = await CryptoDataPoint.GetTimeframe(DateTimeOffset.Now.AddDays(-1), DateTimeOffset.UtcNow, coin.Id);
+                var pointsRaw = await CryptoDataPoint.GetTimeframeAsync(DateTimeOffset.Now.AddDays(-1), DateTimeOffset.UtcNow, coin.Id);
                 var priceSeries = new List<DataPoint>();
                 var volumeSeries = new List<DataPoint>();
                 foreach(var point in pointsRaw)
@@ -22,7 +22,7 @@ namespace CryptoAnalyzer.Controllers
                     priceSeries.Add(new DataPoint(point.LogDate.ToUnixTimeMilliseconds(), point.Price));
                     volumeSeries.Add(new DataPoint(point.LogDate.ToUnixTimeMilliseconds(), point.Volume));
                 }
-                var pointsRawYesterday = await CryptoDataPoint.GetTimeframe(DateTimeOffset.UtcNow.AddDays(-2), DateTimeOffset.UtcNow.AddDays(-1), coin.Id);
+                var pointsRawYesterday = await CryptoDataPoint.GetTimeframeAsync(DateTimeOffset.UtcNow.AddDays(-2), DateTimeOffset.UtcNow.AddDays(-1), coin.Id);
                 var priceSeriesYesterday = new List<DataPoint>();
                 var volumeSeriesYesterday = new List<DataPoint>();
                 foreach (var point in pointsRawYesterday)

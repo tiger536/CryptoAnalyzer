@@ -11,7 +11,7 @@ namespace CryptoAnalyzer.Controllers
     {
         public async Task<IActionResult> Index()
         {
-            var coins = (await Coin.GetImportantCoins(DateTimeOffset.UtcNow.AddDays(-3))).Where(x => !x.IsUseless()).ToList();
+            var coins = (await Coin.GetImportantCoinsAsync(DateTimeOffset.UtcNow.AddDays(-3))).Where(x => !x.IsUseless()).ToList();
             return View(new IndexViewModel()
             {
                 Coins = coins

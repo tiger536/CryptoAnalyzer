@@ -37,7 +37,7 @@ namespace CryptoAnalyzer.CoinGecko
             {
                 try
                 {
-                    var dbCoins = await Coin.GetAll();
+                    var dbCoins = await Coin.GetAllAsync();
                     var allCoins = await _client.GetAsync<List<GeckoCoin>>("coins/list");
                     var newCoins = allCoins.Select(x=> new Coin()
                     {
@@ -51,7 +51,7 @@ namespace CryptoAnalyzer.CoinGecko
                     {
                         var coinDetail = await _client.GetAsync<CoinDetail>(QueryHelpers.AddQueryString($"coins/{coin.Code}", _queryStringParam));
                         coin.MarketCapRank = coinDetail.MarketCapRank;
-                        await Coin.Insert(coin);                        
+                        await Coin.InsertAsync(coin);                        
                     }
                 }
                 catch (Exception e)
