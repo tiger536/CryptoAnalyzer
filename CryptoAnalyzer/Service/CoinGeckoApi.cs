@@ -8,12 +8,14 @@ namespace CryptoAnalyzer.CoinGecko
     public class CoinGeckoApi : IHostedService
     {
         private static IThrottledService _httpClient;
+        private static TelegramBot _telegramBot;
         private static SpotlightHandler _spotlighter;
         private static CoinListGrabber _coinListGrabber;
-        public CoinGeckoApi(IThrottledService client)
+        public CoinGeckoApi(IThrottledService client, TelegramBot telegramApi)
         {
             _httpClient = client;
-            _spotlighter = new SpotlightHandler(_httpClient);
+            _telegramBot = telegramApi;
+            _spotlighter = new SpotlightHandler(_httpClient, _telegramBot);
             _coinListGrabber = new CoinListGrabber(_httpClient);
         }
         public Task StartAsync(CancellationToken cancellationToken)

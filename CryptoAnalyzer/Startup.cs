@@ -32,8 +32,10 @@ namespace CryptoAnalyzer
             {
                 client.BaseAddress = new Uri(Context.CoinGeckoConfiguration.ApiBaseUrl);
             });
+            services.AddSingleton<TelegramBot>();
+            services.AddHostedService(provider => provider.GetService<TelegramBot>());
             services.AddHostedService<CoinGeckoApi>();
-
+            
             services.AddControllersWithViews();
         }
 
@@ -42,11 +44,6 @@ namespace CryptoAnalyzer
         {
             app.UseExceptional();
             app.UseStaticFiles();
-
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true).b;
 
             app.UseRouting();
 

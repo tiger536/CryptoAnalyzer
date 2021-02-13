@@ -16,11 +16,14 @@ namespace CryptoAnalyzer.CoinGecko
     {
         private readonly CancellationTokenSource _globalCancellation;
         private readonly IThrottledService _client;
+        private readonly TelegramBot _telegramBot;
         private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(5).TotalMilliseconds;
-        public SpotlightHandler(IThrottledService client)
+        public SpotlightHandler(IThrottledService client, TelegramBot telegramBot)
         {
             _globalCancellation = new CancellationTokenSource();
             _client = client;
+            _telegramBot = telegramBot;
+            
         }
 
         public async Task GrabAsync()
