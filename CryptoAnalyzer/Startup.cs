@@ -43,6 +43,11 @@ namespace CryptoAnalyzer
             app.UseExceptional();
             app.UseStaticFiles();
 
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true).b;
+
             app.UseRouting();
 
             app.UseAuthorization();

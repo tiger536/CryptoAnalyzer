@@ -26,6 +26,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="StackExchange.Exceptional.AspNetCore" Version="2.2.17" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+    <PackageReference Include="Telegram.Bot" Version="15.7.1" />
   </ItemGroup>
 
 </Project>
