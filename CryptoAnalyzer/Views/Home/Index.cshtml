@@ -37,7 +37,13 @@
             <div class="navbar-brand"><p class="secondary-heading">Newest Coin</p></div>
             @foreach (var newCoin in Model.Coins.Where(x => !x.UnderSpotlight).OrderByDescending(x => x.DateAdded).ToList())
             {
-                <a href="~/Coins/@newCoin.Code" class="list-group-item list-group-item-action">@newCoin.Name</a>
+        <a href="~/Coins/@newCoin.Code" class="list-group-item list-group-item-action flex-column align-items-start">
+            
+            <div class="d-flex w-100 justify-content-between">
+                @newCoin.Name
+                <small class="small">@newCoin.DateAdded.Value.LocalDateTime</small>
+            </div>
+        </a>
             }
         </div>
     </div>

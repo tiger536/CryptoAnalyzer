@@ -122,3 +122,6 @@ body {
 .form-check-label {
   margin-left: 7px;
 }
+.small {
+  color: darkgrey;
+}
