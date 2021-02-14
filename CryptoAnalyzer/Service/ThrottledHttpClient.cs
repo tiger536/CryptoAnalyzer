@@ -40,7 +40,7 @@ namespace CryptoAnalyzer.Service
                 }
                 catch(Exception e)
                 {
-                    await e.LogAsync(null);
+                    await e.AddLogData("partialPath", partialPath).LogAsync(null);
                     tcs.SetResult(default);
                 }
                 stopwatch.Stop();
