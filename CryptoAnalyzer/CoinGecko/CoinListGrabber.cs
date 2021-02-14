@@ -45,7 +45,7 @@ namespace CryptoAnalyzer.CoinGecko
                         Name = x.Name,
                         MarketCapRank = x.MarketCapRank,
                         Symbol = x.Symbol
-                    }).Where(x => !dbCoins.Contains(x) && !x.IsUseless()).ToList();
+                    }).Where(x => !dbCoins.Contains(x) && !x.IsUseless() && !string.IsNullOrEmpty(x.Code)).ToList();
 
                     foreach (var coin in newCoins)
                     {

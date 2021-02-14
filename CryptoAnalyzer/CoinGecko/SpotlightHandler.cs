@@ -32,11 +32,11 @@ namespace CryptoAnalyzer.CoinGecko
             try
             {
                 while (!_globalCancellation.Token.IsCancellationRequested)
-                {                  
+                {
+                    var tryAgainCoins = noDataCoins.Where(x => DateTimeOffset.UtcNow >= x.Value).Select(x => x.Key).ToHashSet();
                     var coins = (await Coin.GetImportantCoinsAsync(DateTimeOffset.UtcNow.AddDays(-3)))
-                        .Where(x => !x.IsUseless()
-                                && (!noDataCoins.ContainsKey(x.Id) || (noDataCoins.ContainsKey(x.Id) && noDataCoins[x.Id] >= DateTimeOffset.UtcNow))).ToList();
-                    var tryAgainCoins = noDataCoins.Where(x => x.Value >= DateTimeOffset.UtcNow).Select(x=>x.Key).ToList();
+                        .Where(x => !x.IsUseless() && (!noDataCoins.ContainsKey(x.Id) || tryAgainCoins.Contains(x.Id))).ToList();
+
                     foreach(var coinID in tryAgainCoins)
 					{
                         noDataCoins.Remove(coinID);
