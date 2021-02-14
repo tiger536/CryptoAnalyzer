@@ -7,11 +7,11 @@ namespace CryptoAnalyzer.CoinGecko
 {
     public class CoinGeckoApi : IHostedService
     {
-        private static IThrottledService _httpClient;
+        private static ThrottledService _httpClient;
         private static TelegramBot _telegramBot;
         private static SpotlightHandler _spotlighter;
         private static CoinListGrabber _coinListGrabber;
-        public CoinGeckoApi(IThrottledService client, TelegramBot telegramApi)
+        public CoinGeckoApi(ThrottledService client, TelegramBot telegramApi)
         {
             _httpClient = client;
             _telegramBot = telegramApi;

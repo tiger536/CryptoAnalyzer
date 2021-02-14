@@ -15,10 +15,12 @@ namespace CryptoAnalyzer.CoinGecko
     public class SpotlightHandler
     {
         private readonly CancellationTokenSource _globalCancellation;
-        private readonly IThrottledService _client;
+        private readonly ThrottledService _client;
         private readonly TelegramBot _telegramBot;
+        private readonly HashSet<int> notificationsCoins = new HashSet<int>();
+        private readonly Dictionary<int, DateTimeOffset> noDataCoins = new Dictionary<int, DateTimeOffset>();
         private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(5).TotalMilliseconds;
-        public SpotlightHandler(IThrottledService client, TelegramBot telegramBot)
+        public SpotlightHandler(ThrottledService client, TelegramBot telegramBot)
         {
             _globalCancellation = new CancellationTokenSource();
             _client = client;
@@ -31,8 +33,15 @@ namespace CryptoAnalyzer.CoinGecko
             {
                 while (!_globalCancellation.Token.IsCancellationRequested)
                 {                  
-                    var coins = (await Coin.GetImportantCoinsAsync(DateTimeOffset.UtcNow.AddDays(-3))).Where(x => !x.IsUseless()).ToList();
-
+                    var coins = (await Coin.GetImportantCoinsAsync(DateTimeOffset.UtcNow.AddDays(-3)))
+                        .Where(x => !x.IsUseless()
+                                && (!noDataCoins.ContainsKey(x.Id) || (noDataCoins.ContainsKey(x.Id) && noDataCoins[x.Id] >= DateTimeOffset.UtcNow))).ToList();
+                    var tryAgainCoins = noDataCoins.Where(x => x.Value >= DateTimeOffset.UtcNow).Select(x=>x.Key).ToList();
+                    foreach(var coinID in tryAgainCoins)
+					{
+                        noDataCoins.Remove(coinID);
+                    }
+                    
                     var waitTime = UPDATE_FREQUENCY / coins.Count;
 
                     var task = Task.Run(async () =>
@@ -97,17 +106,40 @@ namespace CryptoAnalyzer.CoinGecko
 
         private async Task ParseDataAsync(Coin coin)
 		{
-            var data = await CryptoDataPoint.GetTimeframeAsync(DateTimeOffset.UtcNow.AddDays(-7), DateTimeOffset.UtcNow, coin.Id);
-            var today = data.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddDays(-1)).ToList();
-            var yesterday = data.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddDays(-2) && x.LogDate < DateTimeOffset.UtcNow.AddDays(-1)).ToList();
-            var lastPoint = data.Last();
-
-            var recap = CoinRecap.GetRecap(today, yesterday);
-
-            if(recap.LastHourVolumeVariation >= 0.3M || recap.Last3HoursVolumeVariation >= 0.40M || recap.Last9HoursVolumeVariation >= 0.45M)
+            try
+            {
+                var data = await CryptoDataPoint.GetTimeframeAsync(DateTimeOffset.UtcNow.AddDays(-7), DateTimeOffset.UtcNow, coin.Id);
+                var today = data.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddDays(-1)).ToList();
+                var yesterday = data.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddDays(-2) && x.LogDate < DateTimeOffset.UtcNow.AddDays(-1)).ToList();
+                var lastPoint = data.LastOrDefault();
+              
+                if (today.Any())
+                {
+                    var recap = CoinRecap.GetRecap(today, yesterday);
+                    if (recap.LastHourVolumeVariation >= 0.3M || recap.Last3HoursVolumeVariation >= 0.40M || recap.Last9HoursVolumeVariation >= 0.45M)
+                    {
+                        if (!notificationsCoins.Contains(coin.Id))
+                        {
+                            await _telegramBot.SendMessageAsync($"{coin.Code} ({coin.Name})");
+                            notificationsCoins.Add(coin.Id);
+                        }
+                    }
+                    else if(notificationsCoins.Contains(coin.Id))
+					{
+                        await _telegramBot.SendMessageAsync($"{coin.Code} ({coin.Name}) non è più interessante");
+                        notificationsCoins.Remove(coin.Id);
+					}
+                }
+                else if(!noDataCoins.ContainsKey(coin.Id))
+				{
+                    new Exception($"No data point today for {coin.Code} ({coin.Name})").LogNoContext();
+                    noDataCoins.Add(coin.Id, DateTimeOffset.UtcNow.AddHours(1)); //don't grab data for the next hour
+				}
+            }
+            catch(Exception e)
 			{
-                await _telegramBot.SendMessageAsync(coin.Code);
-			}
+                e.LogNoContext();
+            }
         }
 
         public void Cancel()

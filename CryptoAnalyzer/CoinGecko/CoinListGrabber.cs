@@ -14,9 +14,9 @@ namespace CryptoAnalyzer.CoinGecko
     public class CoinListGrabber
     {
         private readonly CancellationTokenSource _globalCancellation;
-        private readonly IThrottledService _client;
+        private readonly ThrottledService _client;
         private static Dictionary<string, string> _queryStringParam;
-        public CoinListGrabber(IThrottledService client)
+        public CoinListGrabber(ThrottledService client)
         {
             _globalCancellation = new CancellationTokenSource();
             _client = client;

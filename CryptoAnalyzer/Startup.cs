@@ -28,7 +28,7 @@ namespace CryptoAnalyzer
             InitializeExceptional(services);
             Context.Initialize(Configuration, Environment);
 
-            services.AddHttpClient<IThrottledService, ThrottledService>(client =>
+            services.AddHttpClient<ThrottledService>(client =>
             {
                 client.BaseAddress = new Uri(Context.CoinGeckoConfiguration.ApiBaseUrl);
             });

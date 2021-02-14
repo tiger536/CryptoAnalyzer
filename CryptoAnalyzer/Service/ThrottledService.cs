@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CryptoAnalyzer.Service
 {
-    public class ThrottledService : IThrottledService
+    public class ThrottledService
     {
         private readonly HttpClient _httpClient;
         private static readonly SemaphoreSlim _throttler = new SemaphoreSlim(1);

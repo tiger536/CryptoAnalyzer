@@ -36,9 +36,9 @@ namespace CryptoAnalyzer.Models
 			var last9HoursPoint = dataPointsToday.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddHours(-10) && x.LogDate <= DateTimeOffset.UtcNow.AddHours(-1));
 			var last9HoursAvgVolume = last9HoursPoint.Any() ? last9HoursPoint.Average(x => x.Volume) : default;
 
-			var last = dataPointsToday.Last();
-			var first = dataPointsToday.First();
-			var h1Ago = dataPointsToday.First(x => x.LogDate >= last.LogDate.AddHours(-1));
+			var last = dataPointsToday.LastOrDefault();
+			var first = dataPointsToday.FirstOrDefault();
+			var h1Ago = dataPointsToday.FirstOrDefault(x => x.LogDate >= last.LogDate.AddHours(-1));
 			
 			var recap = new CoinRecap
 			{
