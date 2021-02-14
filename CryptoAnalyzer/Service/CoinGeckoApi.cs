@@ -7,11 +7,11 @@ namespace CryptoAnalyzer.CoinGecko
 {
     public class CoinGeckoApi : IHostedService
     {
-        private static ThrottledService _httpClient;
+        private static ThrottledHttpClient _httpClient;
         private static TelegramBot _telegramBot;
         private static SpotlightHandler _spotlighter;
         private static CoinListGrabber _coinListGrabber;
-        public CoinGeckoApi(ThrottledService client, TelegramBot telegramApi)
+        public CoinGeckoApi(ThrottledHttpClient client, TelegramBot telegramApi)
         {
             _httpClient = client;
             _telegramBot = telegramApi;
@@ -20,8 +20,8 @@ namespace CryptoAnalyzer.CoinGecko
         }
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            Task.Run(() => _spotlighter.GrabAsync());
-            Task.Run(() => _coinListGrabber.GrabAsync());
+            //Task.Run(() => _spotlighter.GrabAsync());
+            //Task.Run(() => _coinListGrabber.GrabAsync());
 
             return Task.CompletedTask;
         }

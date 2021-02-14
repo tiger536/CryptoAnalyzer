@@ -47,6 +47,17 @@ namespace CryptoAnalyzer.Models
             return coin.Code.Equals(this.Code) && coin.Name.Equals(this.Name) && coin.Symbol.Equals(this.Symbol);
         }
 
+        public static async Task SetSpotlight(bool spotlight, int coinID)
+		{
+            using(var conn = Context.OpenDatabaseConnection())
+			{
+                await conn.ExecuteAsync(@"
+UPDATE dbo.CryptoCurrency
+SET UnderSpotlight =@spotlight
+WHERE Id = @coinID", new { spotlight, coinID });
+			}
+		}
+
         public static async Task<Coin> GetByCode(string code)
         {
             using (var conn = Context.OpenDatabaseConnection())

@@ -42,7 +42,7 @@
                 </span>
             </div>
         </div>
-        <div class="col-5">
+        <div class="col">
             <div class="statsLabel">
                 Volume Variation
             </div>
@@ -60,6 +60,22 @@
                     @Math.Round(Model.CoinRecap.Last3HoursVolumeVariation * 100, 2)%
                 </span>
             </div>
+            <div class="statsItem">
+                <div class="statsSubLabel">Last 9 Hours</div>
+                <span class="statsVariation @(Model.CoinRecap.Last9HoursVolumeVariation > 0 ? "up":"down")">
+                    <i class="arrow @(Model.CoinRecap.Last9HoursVolumeVariation > 0 ? "up":"down")"></i>
+                    @Math.Round(Model.CoinRecap.Last9HoursVolumeVariation * 100, 2)%
+                </span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="statsLabel">
+                Settings
+            </div>
+            <div class="form-check">
+                @Html.CheckBoxFor(model => model.Coin.UnderSpotlight, new { @class = "form-check-input", @id = "spotlightCheckbox" })
+                <label class="form-check-label statsSubLabel" for="spotlightCheckbox">Spotlight</label>
+            </div>
         </div>
     </div>
 </div>
@@ -71,6 +87,7 @@
             "Today", @Html.Raw(JsonConvert.SerializeObject(Model.PriceSeriesYesterday)), "Yesterday");
         mySite.addNewMultiSeriesCanvasChart("chartContainerVolume", "Daily Volume", @Html.Raw(JsonConvert.SerializeObject(Model.VolumeSeries)),
             "Today", @Html.Raw(JsonConvert.SerializeObject(Model.VolumeSeriesYesterday)), "Yesterday");
+        mySite.handleSpotlightCheckbox(@Model.Coin.Id);
     });
 </script>
 

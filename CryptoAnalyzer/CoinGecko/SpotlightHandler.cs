@@ -15,12 +15,12 @@ namespace CryptoAnalyzer.CoinGecko
     public class SpotlightHandler
     {
         private readonly CancellationTokenSource _globalCancellation;
-        private readonly ThrottledService _client;
+        private readonly ThrottledHttpClient _client;
         private readonly TelegramBot _telegramBot;
         private readonly HashSet<int> notificationsCoins = new HashSet<int>();
         private readonly Dictionary<int, DateTimeOffset> noDataCoins = new Dictionary<int, DateTimeOffset>();
         private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(5).TotalMilliseconds;
-        public SpotlightHandler(ThrottledService client, TelegramBot telegramBot)
+        public SpotlightHandler(ThrottledHttpClient client, TelegramBot telegramBot)
         {
             _globalCancellation = new CancellationTokenSource();
             _client = client;

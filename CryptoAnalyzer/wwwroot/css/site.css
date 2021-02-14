@@ -114,3 +114,11 @@ body {
 .secondary-heading {
   color: green;
 }
+.form-check-input {
+  margin-top: 14px;
+  width: 15px;
+  height: 15px;
+}
+.form-check-label {
+  margin-left: 7px;
+}

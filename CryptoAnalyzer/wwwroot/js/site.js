@@ -35,7 +35,15 @@
                 dataPoints: series2
             }]
         });
-chart.render();
-
+        chart.render();
+    },
+    handleSpotlightCheckbox: function (coinID) {
+        $("#spotlightCheckbox").change(function () {
+            $.ajax({
+                url: '/Coins/Spotlight',
+                data: { 'important': this.checked, 'coinID': coinID },
+                type: "post"
+            });
+        });
     }
 }

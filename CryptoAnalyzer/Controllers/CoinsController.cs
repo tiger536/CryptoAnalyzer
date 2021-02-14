@@ -1,7 +1,9 @@
 ﻿using CryptoAnalyzer.Models;
 using Microsoft.AspNetCore.Mvc;
+using StackExchange.Exceptional;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace CryptoAnalyzer.Controllers
@@ -34,6 +36,7 @@ namespace CryptoAnalyzer.Controllers
 
                 return View("~/Views/Coin/Coin.cshtml",new CoinViewModel()
                 {
+                    Coin = coin,
                     PriceSeries = priceSeries,
                     VolumeSeries = volumeSeries,
                     PriceSeriesYesterday = priceSeriesYesterday,
@@ -44,5 +47,22 @@ namespace CryptoAnalyzer.Controllers
             else
                 return NotFound();
         }
+
+        [HttpPost]
+        [Route("Coins/Spotlight")]
+        public async Task<IActionResult> Spotlight(bool important, int coinID)
+		{
+            try
+			{
+                await Coin.SetSpotlight(important, coinID);
+                return Ok();
+			}
+            catch(Exception e)
+			{
+                await e.LogAsync(HttpContext);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+            
+		}
     }
 }
