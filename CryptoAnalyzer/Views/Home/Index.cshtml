@@ -31,13 +31,13 @@
             @foreach (var importantCoin in Model.Coins.Where(x => x.UnderSpotlight).OrderBy(x => x.Name).ToList())
             {
                 <a href="~/Coins/@importantCoin.Code" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    @importantCoin.Name
                     @if (importantCoin.LastTalkedAbout != null)
                     {
-                        <div class="d-flex w-100 justify-content-between">
-                            @importantCoin.Name
-                            <small class="small">@importantCoin.LastTalkedAbout.Value.LocalDateTime</small>
-                        </div>
+                        <small class="small">@importantCoin.LastTalkedAbout.Value.LocalDateTime</small>
                     }
+                </div>                 
                 </a>
             }
         </div>

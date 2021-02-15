@@ -36,7 +36,7 @@ namespace CryptoAnalyzer.CoinGecko
                 {
                     var tryAgainCoins = noDataCoins.Where(x => DateTimeOffset.UtcNow >= x.Value).Select(x => x.Key).ToHashSet();
                     var importantCoins = await Coin.GetImportantCoinsAsync(DateTimeOffset.UtcNow.AddDays(Context.COIN_DAYS));
-                    var internetBuzzCoins = GetNewBuzzToGrab(await Coin.GetInternetBuzzCoinsAsync(DateTimeOffset.UtcNow.AddDays(Context.COIN_DAYS)), importantCoins.Count - Context.MAX_CONCURRENT_COINS);
+                    var internetBuzzCoins = GetNewBuzzToGrab(await Coin.GetInternetBuzzCoinsAsync(DateTimeOffset.UtcNow.AddDays(Context.COIN_DAYS)),Context.MAX_CONCURRENT_COINS - importantCoins.Count);
                     importantCoins.AddRange(internetBuzzCoins);
 
                     var coins = importantCoins.Where(x => !x.IsUseless() && (!noDataCoins.ContainsKey(x.Id) || tryAgainCoins.Contains(x.Id))).ToList();
