@@ -10,8 +10,11 @@ BEGIN
 		Name VARCHAR(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
 		MarketCapRank INT,
 		UnderSpotLight BIT NOT NULL,
-		DateAdded DATETIMEOFFSET NULL
-		 CONSTRAINT [DF_CryptoCurrency_UnderSpotLight] DEFAULT((0))
+		DateAdded DATETIMEOFFSET NULL,
+		LastTalkedAbout DATETIMEOFFSET NULL,
+		Ignore BIT NOT NULL,
+		 CONSTRAINT [DF_CryptoCurrency_UnderSpotLight] DEFAULT((0)),
+		 CONSTRAINT [DF_CryptoCurrency_Ignore] DEFAULT((0))
 	)
 END
 

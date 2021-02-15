@@ -14,7 +14,9 @@ namespace CryptoAnalyzer.Models
         public string Name { get; set; }
         public int? MarketCapRank { get; set; }
         public DateTimeOffset? DateAdded { get; set; }
+        public DateTimeOffset? LastTalkedAbout { get; set; }
         public bool UnderSpotlight { get; set; }
+        public bool Ignore { get; set; }
 
         public bool IsUseless()
         => Code.Contains("token", StringComparison.InvariantCultureIgnoreCase)
@@ -53,10 +55,56 @@ namespace CryptoAnalyzer.Models
 			{
                 await conn.ExecuteAsync(@"
 UPDATE dbo.CryptoCurrency
-SET UnderSpotlight =@spotlight
+SET UnderSpotlight = @spotlight
 WHERE Id = @coinID", new { spotlight, coinID });
 			}
 		}
+
+        public static async Task SetIgnored(bool ignored, int coinID)
+        {
+            using (var conn = Context.OpenDatabaseConnection())
+            {
+                await conn.ExecuteAsync(@"
+UPDATE dbo.CryptoCurrency
+SET Ignore = @ignored
+WHERE Id = @coinID", new { ignored, coinID });
+            }
+        }
+
+        public static async Task SetTalkedAbout(HashSet<string> keywords)
+        {
+            using (var conn = Context.OpenDatabaseConnection())
+            {
+                await conn.ExecuteAsync(@"
+DECLARE @Id TABLE(CoinID INT)
+
+INSERT INTO @id (CoinID)
+SELECT
+	Id
+FROM
+	dbo.CryptoCurrency WITH (NOLOCK)
+WHERE 
+	Code IN @words
+	OR Symbol IN @words
+
+UPDATE
+	C
+SET
+	LastTalkedAbout = SYSDATETIMEOFFSET()
+FROM
+	dbo.CryptoCurrency C
+	INNER JOIN @Id I ON I.CoinID = C.Id",
+                new 
+                { 
+                    words = keywords.Select(x => new DbString()
+                    {
+                        Value = x,
+                        IsAnsi = true,
+                        Length = 25
+                    }) 
+                });
+            }
+        }
 
         public static async Task<Coin> GetByCode(string code)
         {
@@ -70,7 +118,9 @@ SELECT
     Symbol,
     Name,
     DateAdded,
-    UnderSpotlight
+    UnderSpotlight,
+    LastTalkedAbout,
+    Ignore
 FROM
     dbo.CryptoCurrency
 WHERE Code = @code", new { code = new DbString() { IsAnsi = true, Value = code, Length = 50 } });
@@ -89,7 +139,9 @@ SELECT
     Symbol,
     Name,
     DateAdded,
-    UnderSpotlight
+    UnderSpotlight,
+    LastTalkedAbout,
+    Ignore
 FROM
     dbo.CryptoCurrency")).ToHashSet();
             }
@@ -107,12 +159,16 @@ SELECT
     Symbol,
     Name,
     DateAdded,
-    UnderSpotlight
+    UnderSpotlight,
+    LastTalkedAbout,
+    Ignore
 FROM
     dbo.CryptoCurrency
 WHERE
-    DateAdded > @from
-    OR UnderSpotlight = 1", new { from })).AsList();
+    Ignore = 0
+    AND (DateAdded >= @from
+    OR UnderSpotlight = 1
+    OR LastTalkedAbout >= @from)", new { from })).AsList();
             }
         }
 
@@ -121,9 +177,9 @@ WHERE
             using (var conn = Context.OpenDatabaseConnection())
             {
                 await conn.ExecuteAsync(@"
-INSERT INTO dbo.CryptoCurrency(Code, Symbol, Name, MarketCapRank, DateAdded)
+INSERT INTO dbo.CryptoCurrency(Code, Symbol, Name, MarketCapRank, DateAdded, LastTalkedAbout, Ignore)
 VALUES
-(@Code, @Symbol, @Name, @MarketCapRank, SYSDATETIMEOFFSET())", new
+(@Code, @Symbol, @Name, @MarketCapRank, SYSDATETIMEOFFSET(), NULL, 0)", new
                 {
                     Code = new DbString()
                     {

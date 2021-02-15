@@ -28,14 +28,15 @@ namespace CryptoAnalyzer
             InitializeExceptional(services);
             Context.Initialize(Configuration, Environment);
 
+            services.AddHttpClient();
             services.AddHttpClient<ThrottledHttpClient>(client =>
             {
                 client.BaseAddress = new Uri(Context.CoinGeckoConfiguration.ApiBaseUrl);
             });
             services.AddSingleton<TelegramBot>();
             services.AddHostedService(provider => provider.GetService<TelegramBot>());
-            services.AddHostedService<CoinGeckoApi>();
-            
+            services.AddHostedService<BackgroundTaskService>();
+
             services.AddControllersWithViews();
         }
 

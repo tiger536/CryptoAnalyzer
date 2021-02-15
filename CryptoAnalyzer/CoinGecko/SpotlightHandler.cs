@@ -19,7 +19,7 @@ namespace CryptoAnalyzer.CoinGecko
         private readonly TelegramBot _telegramBot;
         private readonly HashSet<int> notificationsCoins = new HashSet<int>();
         private readonly Dictionary<int, DateTimeOffset> noDataCoins = new Dictionary<int, DateTimeOffset>();
-        private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(5).TotalMilliseconds;
+        private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(8).TotalMilliseconds;
         public SpotlightHandler(ThrottledHttpClient client, TelegramBot telegramBot)
         {
             _globalCancellation = new CancellationTokenSource();
@@ -34,13 +34,18 @@ namespace CryptoAnalyzer.CoinGecko
                 while (!_globalCancellation.Token.IsCancellationRequested)
                 {
                     var tryAgainCoins = noDataCoins.Where(x => DateTimeOffset.UtcNow >= x.Value).Select(x => x.Key).ToHashSet();
-                    var coins = (await Coin.GetImportantCoinsAsync(DateTimeOffset.UtcNow.AddDays(-3)))
+                    var coins = (await Coin.GetImportantCoinsAsync(DateTimeOffset.UtcNow.AddDays(Context.COIN_DAYS)))
                         .Where(x => !x.IsUseless() && (!noDataCoins.ContainsKey(x.Id) || tryAgainCoins.Contains(x.Id))).ToList();
 
                     foreach(var coinID in tryAgainCoins)
 					{
                         noDataCoins.Remove(coinID);
                     }
+
+                    if(coins.Count > 200)
+					{
+                        throw new Exception("stoooooop");
+					}
                     
                     var waitTime = UPDATE_FREQUENCY / coins.Count;
 

@@ -45,5 +45,14 @@
                 type: "post"
             });
         });
+    },
+    handleIgnoredCheckbox: function (coinID) {
+        $("#ignoredCheckbox").change(function () {
+            $.ajax({
+                url: '/Coins/Ignore',
+                data: { 'ignore': this.checked, 'coinID': coinID },
+                type: "post"
+            });
+        });
     }
 }

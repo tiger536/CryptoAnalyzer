@@ -1,4 +1,5 @@
-﻿using CryptoAnalyzer.CoinGecko;
+﻿using CryptoAnalyzer.Chan;
+using CryptoAnalyzer.CoinGecko;
 using CryptoAnalyzer.Service;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -10,13 +11,16 @@ namespace CryptoAnalyzer
     public static class Context
     {
         public static CoinGeckoConfiguration CoinGeckoConfiguration { get; private set; }
+        public static ChanConfiguration ChanConfiguration { get; private set; }
         public static TelegramConfiguration TelegramBotConfiguration { get; private set; }
         private static string _sqlConnectionString = default!;
+        public const int COIN_DAYS = -5;
 
         public static void Initialize(IConfiguration configuration, IWebHostEnvironment environment)
         {
             _sqlConnectionString = configuration.GetConnectionString("DefaultConnection");
             CoinGeckoConfiguration = configuration.GetSection("CoinGecko").Get<CoinGeckoConfiguration>();
+            ChanConfiguration = configuration.GetSection("ChanAPI").Get<ChanConfiguration>();
             TelegramBotConfiguration = configuration.GetSection("Telegram").Get<TelegramConfiguration>();
         }
 

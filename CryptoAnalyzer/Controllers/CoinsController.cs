@@ -64,5 +64,22 @@ namespace CryptoAnalyzer.Controllers
             }
             
 		}
+
+        [HttpPost]
+        [Route("Coins/Ignore")]
+        public async Task<IActionResult> Ignore(bool ignore, int coinID)
+        {
+            try
+            {
+                await Coin.SetIgnored(ignore, coinID);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                await e.LogAsync(HttpContext);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+        }
     }
 }
