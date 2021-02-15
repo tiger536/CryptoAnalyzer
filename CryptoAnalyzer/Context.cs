@@ -15,6 +15,7 @@ namespace CryptoAnalyzer
         public static TelegramConfiguration TelegramBotConfiguration { get; private set; }
         private static string _sqlConnectionString = default!;
         public const int COIN_DAYS = -5;
+        public const int MAX_CONCURRENT_COINS = 150;
 
         public static void Initialize(IConfiguration configuration, IWebHostEnvironment environment)
         {

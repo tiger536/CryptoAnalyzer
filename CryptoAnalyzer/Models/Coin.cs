@@ -13,7 +13,7 @@ namespace CryptoAnalyzer.Models
         public string Symbol { get; set; }
         public string Name { get; set; }
         public int? MarketCapRank { get; set; }
-        public DateTimeOffset? DateAdded { get; set; }
+        public DateTimeOffset DateAdded { get; set; }
         public DateTimeOffset? LastTalkedAbout { get; set; }
         public bool UnderSpotlight { get; set; }
         public bool Ignore { get; set; }
@@ -167,8 +167,32 @@ FROM
 WHERE
     Ignore = 0
     AND (DateAdded >= @from
-    OR UnderSpotlight = 1
-    OR LastTalkedAbout >= @from)", new { from })).AsList();
+    OR UnderSpotlight = 1)", new { from })).AsList();
+            }
+        }
+
+        public static async Task<List<Coin>> GetInternetBuzzCoinsAsync(DateTimeOffset from)
+        {
+            using (var conn = Context.OpenDatabaseConnection())
+            {
+                return (await conn.QueryAsync<Coin>(@"
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+SELECT
+    Id,
+    Code,
+    Symbol,
+    Name,
+    DateAdded,
+    UnderSpotlight,
+    LastTalkedAbout,
+    Ignore
+FROM
+    dbo.CryptoCurrency
+WHERE
+    Ignore = 0
+    AND UnderSpotlight = 0
+    AND LastTalkedAbout >= @from
+    AND DateAdded <= @from", new { from })).AsList();
             }
         }
 
