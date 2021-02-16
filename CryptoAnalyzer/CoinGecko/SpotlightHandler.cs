@@ -62,7 +62,7 @@ namespace CryptoAnalyzer.CoinGecko
                             ["to"] = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
                         };
                         var coinDataByInterval = await _client.GetAsync<MarketChart>(QueryHelpers.AddQueryString($"coins/{coin.Code}/market_chart/range", querystringParam));
-                        if (coinDataByInterval is null) return;
+                        if (coinDataByInterval is null) continue;
                         if (coinDataByInterval.HasDifferentSizes)
                         {
                             throw new Exception("Data was not taken at the same time");
