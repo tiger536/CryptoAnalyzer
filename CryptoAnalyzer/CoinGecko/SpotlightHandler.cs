@@ -20,7 +20,8 @@ namespace CryptoAnalyzer.CoinGecko
         private readonly HashSet<int> notificationsCoins = new HashSet<int>();
         private readonly Dictionary<int, DateTimeOffset> noDataCoins = new Dictionary<int, DateTimeOffset>();
         private static Dictionary<int, DateTimeOffset> buzzCoinsLastGrab = new Dictionary<int, DateTimeOffset>();
-        private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(6).TotalMilliseconds;
+        private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(6.5).TotalMilliseconds;
+
         public SpotlightHandler(ThrottledHttpClient client, TelegramBot telegramBot)
         {
             _globalCancellation = new CancellationTokenSource();

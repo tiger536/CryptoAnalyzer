@@ -17,6 +17,7 @@ namespace CryptoAnalyzer.Models
         public DateTimeOffset? LastTalkedAbout { get; set; }
         public bool UnderSpotlight { get; set; }
         public bool Ignore { get; set; }
+        public int Hits { get; set; }
 
         public bool IsUseless()
         => Code.Contains("token", StringComparison.InvariantCultureIgnoreCase)
@@ -76,7 +77,7 @@ WHERE Id = @coinID", new { ignored, coinID });
             using (var conn = Context.OpenDatabaseConnection())
             {
                 await conn.ExecuteAsync(@"
-DECLARE @Id TABLE(CoinID INT)
+DECLARE @Id TABLE (CoinID INT)
 
 INSERT INTO @id (CoinID)
 SELECT
@@ -90,7 +91,8 @@ WHERE
 UPDATE
 	C
 SET
-	LastTalkedAbout = SYSDATETIMEOFFSET()
+	LastTalkedAbout = SYSDATETIMEOFFSET(),
+    Hits = Hits + 1
 FROM
 	dbo.CryptoCurrency C
 	INNER JOIN @Id I ON I.CoinID = C.Id",
@@ -120,7 +122,8 @@ SELECT
     DateAdded,
     UnderSpotlight,
     LastTalkedAbout,
-    Ignore
+    Ignore,
+    Hits
 FROM
     dbo.CryptoCurrency
 WHERE Code = @code", new { code = new DbString() { IsAnsi = true, Value = code, Length = 50 } });
@@ -141,7 +144,8 @@ SELECT
     DateAdded,
     UnderSpotlight,
     LastTalkedAbout,
-    Ignore
+    Ignore,
+    Hits
 FROM
     dbo.CryptoCurrency")).ToHashSet();
             }
@@ -161,7 +165,8 @@ SELECT
     DateAdded,
     UnderSpotlight,
     LastTalkedAbout,
-    Ignore
+    Ignore,
+    Hits
 FROM
     dbo.CryptoCurrency
 WHERE
@@ -185,7 +190,8 @@ SELECT
     DateAdded,
     UnderSpotlight,
     LastTalkedAbout,
-    Ignore
+    Ignore,
+    Hits
 FROM
     dbo.CryptoCurrency
 WHERE
@@ -201,9 +207,9 @@ WHERE
             using (var conn = Context.OpenDatabaseConnection())
             {
                 await conn.ExecuteAsync(@"
-INSERT INTO dbo.CryptoCurrency(Code, Symbol, Name, MarketCapRank, DateAdded, LastTalkedAbout, Ignore)
+INSERT INTO dbo.CryptoCurrency(Code, Symbol, Name, MarketCapRank, DateAdded, LastTalkedAbout, Ignore, Hits)
 VALUES
-(@Code, @Symbol, @Name, @MarketCapRank, SYSDATETIMEOFFSET(), NULL, 0)", new
+(@Code, @Symbol, @Name, @MarketCapRank, SYSDATETIMEOFFSET(), NULL, 0, 0)", new
                 {
                     Code = new DbString()
                     {

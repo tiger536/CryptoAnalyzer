@@ -9,12 +9,11 @@ BEGIN
 		Symbol VARCHAR(25) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
 		Name VARCHAR(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
 		MarketCapRank INT,
-		UnderSpotLight BIT NOT NULL,
+		UnderSpotLight BIT NOT NULL CONSTRAINT [DF_CryptoCurrency_UnderSpotLight] DEFAULT((0)),
 		DateAdded DATETIMEOFFSET NULL,
 		LastTalkedAbout DATETIMEOFFSET NULL,
-		Ignore BIT NOT NULL,
-		 CONSTRAINT [DF_CryptoCurrency_UnderSpotLight] DEFAULT((0)),
-		 CONSTRAINT [DF_CryptoCurrency_Ignore] DEFAULT((0))
+		Ignore BIT NOT NULL CONSTRAINT [DF_CryptoCurrency_Ignore] DEFAULT((0)),
+		Hits INT NOT NULL CONSTRAINT [DF_CryptoCurrency_Hits] DEFAULT((0))		 
 	)
 END
 

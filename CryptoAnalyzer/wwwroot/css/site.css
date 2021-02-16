@@ -125,3 +125,15 @@ body {
 .small {
   color: darkgrey;
 }
+.cont {
+  text-align: end;
+  width: 100%;
+}
+.badge {
+  line-height: inherit;
+  margin-left: 10px;
+  background-color: #8cb4ff;
+}
+.coinName {
+  min-width: 200px;
+}

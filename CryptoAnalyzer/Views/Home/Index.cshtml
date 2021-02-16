@@ -24,20 +24,24 @@
 </header>
 }
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="list-group col-sm">
             <div class="navbar-brand"><p class="secondary-heading">Spotlight</p></div>
             @foreach (var importantCoin in Model.Coins.Where(x => x.UnderSpotlight).OrderBy(x => x.Name).ToList())
             {
-                <a href="~/Coins/@importantCoin.Code" class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="d-flex w-100 justify-content-between">
-                    @importantCoin.Name
-                    @if (importantCoin.LastTalkedAbout != null)
-                    {
-                        <small class="small">@importantCoin.LastTalkedAbout.Value.LocalDateTime</small>
-                    }
-                </div>                 
+                <a href="~/Coins/@importantCoin.Code" class="list-group-item list-group-item-action d-inline-flex">
+                    <span class="coinName">@importantCoin.Name</span>
+                    <div class="cont">
+                        @if (importantCoin.LastTalkedAbout != null)
+                        {
+                            <small class="small">@importantCoin.LastTalkedAbout.Value.LocalDateTime</small>
+                        }
+                        @if(importantCoin.Hits > 0)
+                        {
+                            <span class="badge badge-primary badge-pill">14</span>
+                        }
+                    </div>
                 </a>
             }
         </div>
@@ -45,10 +49,14 @@
             <div class="navbar-brand"><p class="secondary-heading">Newest Coin</p></div>
             @foreach (var newCoin in Model.Coins.Where(x => !x.UnderSpotlight && x.DateAdded >= DateTime.UtcNow.AddDays(Model.NewCoinThresold)).OrderByDescending(x => x.DateAdded).ToList())
             {
-                <a href="~/Coins/@newCoin.Code" class="list-group-item list-group-item-action flex-column align-items-start">
-                    <div class="d-flex w-100 justify-content-between">
-                        @newCoin.Name
+                <a href="~/Coins/@newCoin.Code" class="list-group-item list-group-item-action d-inline-flex">
+                    <span class="coinName">@newCoin.Name</span>
+                    <div class="cont">
                         <small class="small">@newCoin.DateAdded.LocalDateTime</small>
+                        @if (newCoin.Hits > 0)
+                        {
+                            <span class="badge badge-primary badge-pill">14</span>
+                        }
                     </div>
                 </a>
             }
@@ -57,10 +65,14 @@
             <div class="navbar-brand"><p class="secondary-heading">Last Talked About</p></div>
             @foreach (var interetTalkCoin in Model.InternetBuzzCoins.OrderByDescending(x => x.LastTalkedAbout).ToList())
             {
-                <a href="~/Coins/@interetTalkCoin.Code" class="list-group-item list-group-item-action flex-column align-items-start">
-                    <div class="d-flex w-100 justify-content-between">
-                        @interetTalkCoin.Name
+                <a href="~/Coins/@interetTalkCoin.Code" class="list-group-item list-group-item-action d-inline-flex">
+                    <span class="coinName">@interetTalkCoin.Name</span>
+                    <div class="cont">               
                         <small class="small">@interetTalkCoin.LastTalkedAbout.Value.LocalDateTime</small>
+                        @if (interetTalkCoin.Hits > 0)
+                        {
+                            <span class="badge badge-primary badge-pill">14</span>
+                        }
                     </div>
                 </a>
             }
