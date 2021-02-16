@@ -15,7 +15,8 @@ namespace CryptoAnalyzer.Chan
     {
         private readonly CancellationTokenSource _globalCancellation;
         private readonly HttpClient _client;
-        private readonly Regex capitalWordsRegex = new Regex("\\b[A-Z]{2,}(?:\\s+[A-Z]+)*\\b");
+        private readonly Regex regex = new Regex("(\\b[A-Z]{2,}(?:\\s+[A-Z]+)*\\b)|(^([\\w\\-]+))"); //capital words or first word
+        
         public ThreadScraper(HttpClient client)
         {
             _globalCancellation = new CancellationTokenSource();
@@ -35,7 +36,7 @@ namespace CryptoAnalyzer.Chan
                     var threadNames = threadList.SelectMany(x => x.threads.Where(x => !string.IsNullOrEmpty(x.sub)).Select(x => x.sub)).ToList();
                     foreach (var threadName in threadNames)
                     {
-                        foreach (Match ItemMatch in capitalWordsRegex.Matches(threadName))
+                        foreach (Match ItemMatch in regex.Matches(threadName))
                         {
                             possibleCoins.UnionWith(ItemMatch.Value.Split(" "));
                         }
