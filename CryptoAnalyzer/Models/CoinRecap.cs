@@ -36,9 +36,9 @@ namespace CryptoAnalyzer.Models
 			var last9HoursPoint = dataPointsToday.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddHours(-10) && x.LogDate <= DateTimeOffset.UtcNow.AddHours(-1));
 			var last9HoursAvgVolume = last9HoursPoint.Any() ? last9HoursPoint.Average(x => x.Volume) : default;
 
-			var last = dataPointsToday.LastOrDefault();
-			var first = dataPointsToday.FirstOrDefault();
-			var h1Ago = dataPointsToday.FirstOrDefault(x => x.LogDate >= last.LogDate.AddHours(-1));
+			var last = dataPointsToday.LastOrDefault() ?? new CryptoDataPoint();
+			var first = dataPointsToday.FirstOrDefault() ?? new CryptoDataPoint();
+			var h1Ago = dataPointsToday.FirstOrDefault(x => x.LogDate >= last.LogDate.AddHours(-1)) ?? new CryptoDataPoint();
 			
 			var recap = new CoinRecap
 			{
@@ -46,10 +46,10 @@ namespace CryptoAnalyzer.Models
 				LastPrice = last.Price,
 				LastVolume = last.Volume,
 				LastMarketCap = last.MarketCap,
-				PriceVariation24h = (last.Price - first.Price) / first.Price,
-				VoumeVariation24h = first.Volume > 0 ? (last.Volume - first.Volume) / first.Volume : 0,
+				PriceVariation24h = first.Price > 0 ? ((last.Price - first.Price) / first.Price) :0,
+				VoumeVariation24h = first.Volume > 0 ? ((last.Volume - first.Volume) / first.Volume) : 0,
 				MarketCapVariation24h = first.MarketCap > 0 ? ((last.MarketCap - first.MarketCap) / first.MarketCap) : 0,
-				PriceVariation1h = (last.Price - h1Ago.Price) / h1Ago.Price,
+				PriceVariation1h = h1Ago.Price > 0 ? ((last.Price - h1Ago.Price) / h1Ago.Price) : 0,
 				YesterdayAvgVolume = lastDayMeanVolume,
 				LastHourAvgVolume = lastHourAvgVolume,
 				Last3HoursAvgVolume = last3HoursAvgVolume,

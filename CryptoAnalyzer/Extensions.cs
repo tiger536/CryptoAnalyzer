@@ -9,7 +9,7 @@ namespace CryptoAnalyzer.Extensions
             int stop = 1;
             if (x > 1) stop = (int) Math.Pow(10,x);
             int precision = 0;          
-            if (input < 1)
+            if (input < 1 && input != 0)
             {
                 var val = input;
                 while (Math.Abs(val) < stop)
