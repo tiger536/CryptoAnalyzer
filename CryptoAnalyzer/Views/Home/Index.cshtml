@@ -30,7 +30,7 @@
             <div class="navbar-brand"><p class="secondary-heading">Spotlight</p></div>
             @foreach (var importantCoin in Model.Coins.Where(x => x.UnderSpotlight).OrderBy(x => x.Name).ToList())
             {
-                <a href="~/Coins/@importantCoin.Code" class="list-group-item list-group-item-action d-inline-flex">
+                <a href="~/Coins/@importantCoin.Code" class="list-group-item list-group-item-action list-group-item-dark d-inline-flex">
                     <span class="coinName">@importantCoin.Name</span>
                     <div class="cont">
                         @if (importantCoin.LastTalkedAbout != null)
@@ -49,7 +49,7 @@
             <div class="navbar-brand"><p class="secondary-heading">Newest Coin</p></div>
             @foreach (var newCoin in Model.Coins.Where(x => !x.UnderSpotlight && x.DateAdded >= DateTime.UtcNow.AddDays(Model.NewCoinThresold)).OrderByDescending(x => x.DateAdded).ToList())
             {
-                <a href="~/Coins/@newCoin.Code" class="list-group-item list-group-item-action d-inline-flex">
+                <a href="~/Coins/@newCoin.Code" class="list-group-item list-group-item-action list-group-item-dark d-inline-flex">
                     <span class="coinName">@newCoin.Name</span>
                     <div class="cont">
                         <small class="small">@newCoin.DateAdded.LocalDateTime</small>
@@ -65,7 +65,7 @@
             <div class="navbar-brand"><p class="secondary-heading">Last Talked About</p></div>
             @foreach (var interetTalkCoin in Model.InternetBuzzCoins.OrderByDescending(x => x.LastTalkedAbout).OrderByDescending(x => x.Hits).ToList())
             {
-                <a href="~/Coins/@interetTalkCoin.Code" class="list-group-item list-group-item-action d-inline-flex">
+                <a href="~/Coins/@interetTalkCoin.Code" class="list-group-item list-group-item-action list-group-item-dark d-inline-flex">
                     <span class="coinName">@interetTalkCoin.Name</span>
                     <div class="cont">               
                         <small class="small">@interetTalkCoin.LastTalkedAbout.Value.LocalDateTime</small>

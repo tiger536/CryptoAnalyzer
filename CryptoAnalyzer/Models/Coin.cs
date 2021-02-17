@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -72,40 +73,57 @@ WHERE Id = @coinID", new { ignored, coinID });
             }
         }
 
-        public static async Task SetTalkedAbout(HashSet<string> keywords)
+        public static async Task SetTalkedAbout(Dictionary<string,int> possibleCoinsNewReplies)
         {
+            var dt = new DataTable();
+            dt.Columns.Add("Code", typeof(string));
+            dt.Columns.Add("NewReplies", typeof(int));
+            foreach(var val in possibleCoinsNewReplies)
+			{
+                var row = dt.NewRow();
+                row["Code"] = val.Key;
+                row["NewReplies"] = val.Value;
+                dt.Rows.Add(row);
+            }
+
             using (var conn = Context.OpenDatabaseConnection())
             {
                 await conn.ExecuteAsync(@"
-DECLARE @Id TABLE (CoinID INT)
+DECLARE @Id TABLE (CoinID INT, Replies INT)
 
-INSERT INTO @id (CoinID)
+INSERT INTO @id (CoinID, Replies)
 SELECT
-	Id
+	C.Id,
+    P.NewReplies
 FROM
-	dbo.CryptoCurrency WITH (NOLOCK)
-WHERE 
-	Code IN @words
-	OR Symbol IN @words
+	dbo.CryptoCurrency C WITH (NOLOCK)
+    INNER JOIN @possibleCoins P ON P.Code = C.Code
+
+INSERT INTO @id (CoinID, Replies)
+SELECT
+	C.Id,
+    P.NewReplies
+FROM
+	dbo.CryptoCurrency C WITH (NOLOCK)
+    INNER JOIN @possibleCoins P ON P.Code = C.Symbol
+    LEFT OUTER JOIN @id I ON I.CoinID = C.Id
+WHERE
+    I.CoinID IS NULL
 
 UPDATE
 	C
 SET
-	LastTalkedAbout = SYSDATETIMEOFFSET(),
-    Hits = Hits + 1
+	C.LastTalkedAbout = SYSDATETIMEOFFSET(),
+    C.Hits = C.Hits + I.Replies
 FROM
 	dbo.CryptoCurrency C
 	INNER JOIN @Id I ON I.CoinID = C.Id",
                 new 
                 { 
-                    words = keywords.Select(x => new DbString()
-                    {
-                        Value = x,
-                        IsAnsi = true,
-                        Length = 25
-                    }) 
+                    possibleCoins = dt.AsTableValuedParameter("dbo.TVP_PossibleCoins")
                 });
             }
+            dt.Dispose();
         }
 
         public static async Task<Coin> GetByCode(string code)

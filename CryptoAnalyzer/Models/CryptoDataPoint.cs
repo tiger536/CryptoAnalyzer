@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace CryptoAnalyzer.Models
@@ -35,23 +36,36 @@ WHERE CoinId = @coinID AND LogDate BETWEEN @from AND @to ORDER BY LogDate ASC", 
 
         public static async Task BulkInsertAsync(int coinID, List<CryptoDataPoint> dapaPoints)
         {
+            var dt = new DataTable();
+            dt.Columns.Add("LogDate", typeof(DateTimeOffset));
+            dt.Columns.Add("Volume", typeof(decimal));
+            dt.Columns.Add("Price", typeof(decimal));
+            dt.Columns.Add("MarketCap", typeof(decimal));
+            foreach (var val in dapaPoints)
+            {
+                var row = dt.NewRow();
+                row["LogDate"] = val.LogDate;
+                row["Volume"] = val.Volume;
+                row["Price"] = val.Price;
+                row["MarketCap"] = val.MarketCap;
+                dt.Rows.Add(row);
+            }
+
             using (var connection = Context.OpenDatabaseConnection())
             {
-                foreach (var data in dapaPoints)
-                {
-                    await connection.ExecuteAsync(@"
+                await connection.ExecuteAsync(@"
 INSERT INTO dbo.CryptoDetails (CoinId, LogDate, Volume, Price, MarketCap)
-VALUES
-(@CoinId, @LogDate, @Volume, @Price, @MarketCap)", new
-                    {
-                        CoinId = coinID,
-                        data.LogDate,
-                        data.Volume,
-                        data.Price,
-                        data.MarketCap
-                    });
-                }
+SELECT
+    @CoinID,
+    LogDate,
+    Volume,
+    Price,
+    MarketCap
+FROM
+    @data", new { CoinId = coinID, data = dt.AsTableValuedParameter("dbo.TVP_CryptoData") });
             }
+
+            dt.Dispose();
         }
     }
 }

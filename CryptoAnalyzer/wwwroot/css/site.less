@@ -3,6 +3,9 @@
 @down-color: #ea3943;
 @white-color: #fff;
 @up-color: #16c784;
+@darkgray-color: #272727;
+@lightgray-color: #2b2b2b;
+@graytext-color: #999;
 
 a.navbar-brand {
     white-space: normal;
@@ -80,6 +83,7 @@ button.accept-policy {
 body {
     margin-bottom: 60px;
     font-family: Inter, -apple-system, BlinkMacSystemFont, "segoe ui", Roboto, Helvetica, Arial, sans-serif;
+    background-color: @darkgray-color;
 }
 
 .footer {
@@ -114,7 +118,7 @@ body {
 }
 
 .statsValue {
-    color: @color-primary-black;
+    color: @white-color;
     font-size: 32px;
     font-weight: 700;
     line-height: 42px;
@@ -138,7 +142,7 @@ body {
 }
 
 .statsSubLabel {
-    color: @color-primary-black;
+    color: @white-color;
     font-size: 18px;
     font-weight: 700;
     line-height: 42px;
@@ -160,7 +164,7 @@ body {
 }
 
 .small {
-    color: darkgrey;
+    color: @graytext-color;
 }
 
 .cont {
@@ -176,4 +180,10 @@ body {
 
 .coinName {
     min-width: 200px;
+    color: @white-color;
+}
+
+.list-group-item-dark {
+    background-color: @lightgray-color;
+    border-color: @graytext-color;
 }
