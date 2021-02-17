@@ -87,11 +87,11 @@
 <div id="chartContainerVolume" class="chart mx-auto"></div>
 <script>
     $(document).ready(function () {
-        if (@Model.PriceSeries.Any()) {
+        if (@Json.Serialize(Model.PriceSeries.Any())) {
             mySite.addNewMultiSeriesCanvasChart("chartContainerPrice", "Daily Price", @Html.Raw(JsonConvert.SerializeObject(Model.PriceSeries)),
                 "Today", @Html.Raw(JsonConvert.SerializeObject(Model.PriceSeriesYesterday)), "Yesterday");
         }
-        if (@Model.VolumeSeries.Any()) {
+        if (@Json.Serialize(Model.VolumeSeries.Any())) {
              mySite.addNewMultiSeriesCanvasChart("chartContainerVolume", "Daily Volume", @Html.Raw(JsonConvert.SerializeObject(Model.VolumeSeries)),
                 "Today", @Html.Raw(JsonConvert.SerializeObject(Model.VolumeSeriesYesterday)), "Yesterday");
         }

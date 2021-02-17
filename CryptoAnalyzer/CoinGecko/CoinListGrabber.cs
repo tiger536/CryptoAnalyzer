@@ -15,16 +15,17 @@ namespace CryptoAnalyzer.CoinGecko
     {
         private readonly CancellationTokenSource _globalCancellation;
         private readonly ThrottledHttpClient _client;
+        private readonly TelegramBot _telegramBot;
         private static Dictionary<string, string> _queryStringParam;
-        public CoinListGrabber(ThrottledHttpClient client)
+        public CoinListGrabber(ThrottledHttpClient client, TelegramBot telegramBot)
         {
             _globalCancellation = new CancellationTokenSource();
             _client = client;
-
+            _telegramBot = telegramBot;
             _queryStringParam = new Dictionary<string, string>
             {
                 ["localization"] = "false",
-                ["tickers"] = "false",
+                ["tickers"] = "true",
                 ["market_data"] = "false",
                 ["community_data"] = "false",
                 ["developer_data"] = "false"
@@ -51,7 +52,8 @@ namespace CryptoAnalyzer.CoinGecko
                     {
                         var coinDetail = await _client.GetAsync<CoinDetail>(QueryHelpers.AddQueryString($"coins/{coin.Code}", _queryStringParam));
                         coin.MarketCapRank = coinDetail.MarketCapRank;
-                        await Coin.InsertAsync(coin);                        
+                        await Coin.InsertAsync(coin);
+                        await _telegramBot.SendMessageAsync($"New Coin: {coin.Code}({coin.Name})\n Available at: {string.Join(", ",coinDetail.tickers.Select(x => x.market.name))}");
                     }
                 }
                 catch (Exception e)

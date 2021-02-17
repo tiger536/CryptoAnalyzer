@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ namespace CryptoAnalyzer.CoinGecko
         private readonly HashSet<int> notificationsCoins = new HashSet<int>();
         private readonly Dictionary<int, DateTimeOffset> noDataCoins = new Dictionary<int, DateTimeOffset>();
         private static Dictionary<int, DateTimeOffset> buzzCoinsLastGrab = new Dictionary<int, DateTimeOffset>();
-        private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(6.5).TotalMilliseconds;
+        private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(7).TotalMilliseconds;
 
         public SpotlightHandler(ThrottledHttpClient client, TelegramBot telegramBot)
         {
@@ -115,16 +116,16 @@ namespace CryptoAnalyzer.CoinGecko
                 {
                     var recap = CoinRecap.GetRecap(today, yesterday);
                     if (recap.LastHourVolumeVariation >= 0.3M || recap.Last3HoursVolumeVariation >= 0.40M || recap.Last9HoursVolumeVariation >= 0.45M)
-                    {
+                    {                     
                         if (!notificationsCoins.Contains(coin.Id))
                         {
-                            await _telegramBot.SendMessageAsync($"{coin.Code} ({coin.Name})");
+                            await _telegramBot.SendMessageAsync(CreateMessage(recap,coin));
                             notificationsCoins.Add(coin.Id);
                         }
                     }
                     else if(notificationsCoins.Contains(coin.Id))
 					{
-                        await _telegramBot.SendMessageAsync($"{coin.Code} ({coin.Name}) non è più interessante");
+                        await _telegramBot.SendMessageAsync($"{coin.Code} ({coin.Name}) is now bad");
                         notificationsCoins.Remove(coin.Id);
 					}
                 }
@@ -140,7 +141,22 @@ namespace CryptoAnalyzer.CoinGecko
             }
         }
 
-        private static List<Coin> GetNewBuzzToGrab(List<Coin> coins, int num)
+		private string CreateMessage(CoinRecap recap, Coin coin)
+		{
+            var sb = new StringBuilder($"{coin.Code} ({coin.Name}) \n");
+            if (recap.LastHourVolumeVariation >= 0.3M)
+                sb.AppendLine($"LastHourVolumeVariation: {Math.Round(recap.LastHourVolumeVariation, 2)}");
+            if (recap.Last3HoursVolumeVariation >= 0.4M)
+                sb.AppendLine($"Last3HoursVolumeVariation: {Math.Round(recap.Last3HoursVolumeVariation, 2)}");
+            if (recap.Last9HoursVolumeVariation >= 0.45M)
+                sb.AppendLine($"Last9HoursVolumeVariation: {Math.Round(recap.Last9HoursVolumeVariation, 2)}");
+            if (recap.HugeVolSpikeLastHour)
+                sb.AppendLine($"HugeVolSpikeLastHour!!");
+
+            return sb.ToString();
+        }
+
+		private static List<Coin> GetNewBuzzToGrab(List<Coin> coins, int num)
 		{
             var newBuzz = coins.Where(x => !buzzCoinsLastGrab.ContainsKey(x.Id)).Take(num).ToList();
             newBuzz.ForEach(x => buzzCoinsLastGrab.Add(x.Id, DateTimeOffset.UtcNow));

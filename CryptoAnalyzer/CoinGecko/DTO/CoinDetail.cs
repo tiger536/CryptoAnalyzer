@@ -43,6 +43,18 @@ namespace CryptoAnalyzer.CoinGecko.DTO
         public object bing_matches { get; set; }
     }
 
+    public class Market
+    {
+        public string name { get; set; }
+        public string identifier { get; set; }
+        public bool has_trading_incentive { get; set; }
+    }
+
+    public class Ticker
+    {
+        public Market market { get; set; }
+    }
+
     public class CoinDetail
     {
         public string id { get; set; }
@@ -73,5 +85,6 @@ namespace CryptoAnalyzer.CoinGecko.DTO
         public PublicInterestStats public_interest_stats { get; set; }
         public List<object> status_updates { get; set; }
         public DateTime? last_updated { get; set; }
+        public List<Ticker> tickers { get; set; }
     }
 }

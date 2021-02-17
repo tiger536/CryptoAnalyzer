@@ -19,6 +19,7 @@ namespace CryptoAnalyzer.Models
 		public decimal LastHourAvgVolume { get; set; }
 		public decimal Last3HoursAvgVolume { get; set; }
 		public decimal Last9HoursAvgVolume { get; set; }
+		public bool HugeVolSpikeLastHour { get; set; }
 		public decimal LastHourVolumeVariation => LastHourAvgVolume > 0 ? ((LastVolume - LastHourAvgVolume) / LastHourAvgVolume) : default;
 		public decimal Last3HoursVolumeVariation => Last3HoursAvgVolume > 0 ? ((LastVolume - Last3HoursAvgVolume) / Last3HoursAvgVolume) : default;
 		public decimal Last9HoursVolumeVariation => Last9HoursAvgVolume > 0 ? ((LastVolume - Last9HoursAvgVolume) / Last9HoursAvgVolume) : default;
@@ -26,10 +27,20 @@ namespace CryptoAnalyzer.Models
 		public static CoinRecap GetRecap(List<CryptoDataPoint> dataPointsToday, List<CryptoDataPoint> dataPointsYesterday)
 		{
 			var lastDayMeanVolume = dataPointsYesterday.Any() ? dataPointsYesterday.Average(x => x.Volume) : default;
-
+			var lastHourHalfPoint = dataPointsToday.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddMinutes(-90));
 			var lastHourPoint = dataPointsToday.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddMinutes(-70) && x.LogDate <= DateTimeOffset.UtcNow.AddMinutes(-10));
 			var lastHourAvgVolume = lastHourPoint.Any() ? lastHourPoint.Average(x => x.Volume) : default;
-
+			bool hugeVolVar = false;
+			if(lastHourHalfPoint.Any())
+			{
+				var order = lastHourHalfPoint.OrderBy(i => i.Volume).ToList();
+				var min = order.FirstOrDefault();
+				var max = order.LastOrDefault();
+				if(max.LogDate > min.LogDate && ((max.Price - min.Price)/min.Price) > 0.35M)
+				{
+					hugeVolVar = true;
+				}
+			}
 			var last3HoursPoint = dataPointsToday.Where(x => x.LogDate >= DateTimeOffset.UtcNow.AddHours(-4) && x.LogDate <= DateTimeOffset.UtcNow.AddMinutes(-30));
 			var last3HoursAvgVolume = last3HoursPoint.Any() ? last3HoursPoint.Average(x => x.Volume) : default;
 
@@ -53,7 +64,8 @@ namespace CryptoAnalyzer.Models
 				YesterdayAvgVolume = lastDayMeanVolume,
 				LastHourAvgVolume = lastHourAvgVolume,
 				Last3HoursAvgVolume = last3HoursAvgVolume,
-				Last9HoursAvgVolume = last9HoursAvgVolume
+				Last9HoursAvgVolume = last9HoursAvgVolume,
+				HugeVolSpikeLastHour = hugeVolVar
 			};
 			return recap;
 		}

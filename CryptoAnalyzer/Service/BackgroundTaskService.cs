@@ -15,7 +15,7 @@ namespace CryptoAnalyzer.CoinGecko
         public BackgroundTaskService(ThrottledHttpClient throttledhttpClient, TelegramBot telegramApi, HttpClient httpClient)
         {
             _spotlighter = new SpotlightHandler(throttledhttpClient, telegramApi);
-            _coinListGrabber = new CoinListGrabber(throttledhttpClient);
+            _coinListGrabber = new CoinListGrabber(throttledhttpClient, telegramApi);
             _threadScraper = new ThreadScraper(httpClient);
         }
         public Task StartAsync(CancellationToken cancellationToken)
