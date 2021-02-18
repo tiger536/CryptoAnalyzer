@@ -85,6 +85,12 @@
 </div>
 <div id="chartContainerPrice" class="chart mx-auto"></div>
 <div id="chartContainerVolume" class="chart mx-auto"></div>
+<div class="form-group">
+    <label class="statsSubLabel" for="notesTextbox">Notes:</label>
+    <textarea class="form-control" id="notesTextbox" rows="3">@Model.Coin.Details</textarea>
+    <button type="button" id="btnNotes" class="btn btn-primary">Set</button>
+</div>
+
 <script>
     $(document).ready(function () {
         if (@Json.Serialize(Model.PriceSeries.Any())) {
@@ -98,6 +104,7 @@
 
         mySite.handleSpotlightCheckbox(@Model.Coin.Id);
         mySite.handleIgnoredCheckbox(@Model.Coin.Id);
+        mySite.handleNotesTextbox(@Model.Coin.Id);
      });
 </script>
 

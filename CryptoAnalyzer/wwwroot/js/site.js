@@ -54,5 +54,14 @@
                 type: "post"
             });
         });
+    },
+    handleNotesTextbox: function (coinID) {
+        $("#btnNotes").click(function () {
+            $.ajax({
+                url: '/Coins/Notes',
+                data: { 'notes': $("#notesTextbox").val(), 'coinID': coinID },
+                type: "post"
+            });
+        });
     }
 }

@@ -56,8 +56,9 @@ namespace CryptoAnalyzer.Chan
                         {
                             foreach (var coinName in c)
                             {
-                                possibleCoinsNewReplies.TryGetValue(coinName, out var currentCount);
-                                possibleCoinsNewReplies[coinName] = currentCount + newReplies;
+                                var secureCoinName = coinName.Length > 50 ? coinName.Substring(0,50) : coinName;
+                                possibleCoinsNewReplies.TryGetValue(secureCoinName, out var currentCount);
+                                possibleCoinsNewReplies[secureCoinName] = currentCount + newReplies;
                             }
                         }
 					}

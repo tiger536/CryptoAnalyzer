@@ -61,8 +61,7 @@ namespace CryptoAnalyzer.Controllers
 			{
                 await e.LogAsync(HttpContext);
                 return StatusCode((int)HttpStatusCode.InternalServerError);
-            }
-            
+            }          
 		}
 
         [HttpPost]
@@ -79,7 +78,22 @@ namespace CryptoAnalyzer.Controllers
                 await e.LogAsync(HttpContext);
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
+        }
 
+        [HttpPost]
+        [Route("Coins/Notes")]
+        public async Task<IActionResult> SetNotes(string notes, int coinID)
+        {
+            try
+            {
+                await Coin.SetNotes(notes, coinID);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                await e.LogAsync(HttpContext);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
     }
 }
