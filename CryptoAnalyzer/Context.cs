@@ -1,6 +1,7 @@
 ﻿using CryptoAnalyzer.Chan;
 using CryptoAnalyzer.CoinGecko;
 using CryptoAnalyzer.Service;
+using Dapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using System.Data.Common;
@@ -23,6 +24,15 @@ namespace CryptoAnalyzer
             CoinGeckoConfiguration = configuration.GetSection("CoinGecko").Get<CoinGeckoConfiguration>();
             ChanConfiguration = configuration.GetSection("ChanAPI").Get<ChanConfiguration>();
             TelegramBotConfiguration = configuration.GetSection("Telegram").Get<TelegramConfiguration>();
+
+            using(var conn = OpenDatabaseConnection())
+			{
+                conn.Execute(@"
+SELECT Value FROM dbo.Content WHERE Name = 'BizThreadData'
+
+IF @@ROWCOUNT = 0
+	INSERT INTO dbo.Content(Name,Value) VALUES ('BizThreadData','{}')");
+			}
         }
 
         public static DbConnection OpenDatabaseConnection()

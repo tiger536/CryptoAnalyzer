@@ -37,6 +37,34 @@
         });
         chart.render();
     },
+    addNewSingleSeriesCanvasChart: function (chartContainer, chartTitle, series1, series1Name) {
+        var chart = new CanvasJS.Chart(chartContainer, {
+            theme: "dark2",
+            title: {
+                text: chartTitle
+            },
+            axisY: {
+                title: "#",
+                titleFontSize: 24
+            },
+            axisX: {
+                valueFormatString: "HH:mm",
+            },
+            toolTip: {
+                shared: true
+            },
+            data: [{
+                type: "line",
+                color: "#037ffc",
+                name: series1Name,
+                yValueFormatString: "$#,##0.##",
+                xValueFormatString: "HH:mm",
+                xValueType: "dateTime",
+                dataPoints: series1
+            }]
+        });
+        chart.render();
+    },
     handleSpotlightCheckbox: function (coinID) {
         $("#spotlightCheckbox").change(function () {
             $.ajax({

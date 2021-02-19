@@ -29,6 +29,7 @@ namespace CryptoAnalyzer.Models
             || Name.Contains("ETH")
             || Name.Contains("Cash")
             || Name.Contains("yield", StringComparison.InvariantCultureIgnoreCase)
+            || Name.Contains("synthetic", StringComparison.InvariantCultureIgnoreCase)
             || Name.Contains("dollar", StringComparison.InvariantCultureIgnoreCase)
             || Code.Contains("coinbase", StringComparison.InvariantCultureIgnoreCase)
             || Code.Contains("adjusted", StringComparison.InvariantCultureIgnoreCase)

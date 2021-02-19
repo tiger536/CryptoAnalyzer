@@ -25,8 +25,7 @@ namespace CryptoAnalyzer.Chan
 
         public async Task ScrapAsync()
         {
-            var coinsInThread = new Dictionary<int, HashSet<string>>();
-            var repliesInThread = new Dictionary<int, int>();
+            var bizThreadsData = await ThreadData.GetFromDB();
             while (!_globalCancellation.Token.IsCancellationRequested)
             {
                 try
@@ -39,22 +38,24 @@ namespace CryptoAnalyzer.Chan
 
                     foreach(var thread in threadList)
 					{
-                        coinsInThread.TryGetValue(thread.no, out var c);
-                        if(c is null)
+                        bizThreadsData.TryGetValue(thread.no, out var threadData);
+                        if(threadData is null)
 						{
-                            c = new HashSet<string>();
+                            threadData = new ThreadData();
                             foreach (Match ItemMatch in regex.Matches(thread.sub))
                             {
-                                c.UnionWith(ItemMatch.Value.Split(" "));
+                                threadData.PossibleCoins.UnionWith(ItemMatch.Value.Split(" "));
                             }
-                            coinsInThread[thread.no] = c;
+                            bizThreadsData[thread.no] = threadData;
                         }
-                        repliesInThread.TryGetValue(thread.no, out var count);
-                        repliesInThread[thread.no] = thread.replies;
-                        var newReplies = thread.replies - count;
+
+                        var lastRepliesCount = threadData.Replies;
+                        threadData.LastUpdate = DateTimeOffset.FromUnixTimeSeconds(thread.LastModified);
+                        threadData.Replies = thread.replies;
+                        var newReplies = thread.replies - lastRepliesCount;
                         if (newReplies > 0)
                         {
-                            foreach (var coinName in c)
+                            foreach (var coinName in threadData.PossibleCoins)
                             {
                                 var secureCoinName = coinName.Length > 50 ? coinName.Substring(0,50) : coinName;
                                 possibleCoinsNewReplies.TryGetValue(secureCoinName, out var currentCount);
@@ -63,12 +64,13 @@ namespace CryptoAnalyzer.Chan
                         }
 					}
                     await Coin.SetTalkedAbout(possibleCoinsNewReplies);
+                    await ThreadData.CleanAndStore(bizThreadsData);
                 }
                 catch (Exception e)
                 {
                     e.LogNoContext();
                 }
-                await Task.Delay(TimeSpan.FromMinutes(30));
+                await Task.Delay(TimeSpan.FromMinutes(5));
             }
         }
 

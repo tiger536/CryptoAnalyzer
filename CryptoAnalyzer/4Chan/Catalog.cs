@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace CryptoAnalyzer.Chan
 {
@@ -49,7 +50,8 @@ namespace CryptoAnalyzer.Chan
         public int omitted_posts { get; set; }
         public int omitted_images { get; set; }
         public List<LastReply> last_replies { get; set; }
-        public int last_modified { get; set; }
+        [JsonProperty("last_modified")]
+        public long LastModified { get; set; }
         public int? bumplimit { get; set; }
         public int? imagelimit { get; set; }
     }

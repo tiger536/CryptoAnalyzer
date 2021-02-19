@@ -12,6 +12,7 @@ namespace CryptoAnalyzer.Models
         public decimal Volume { get; set; }
         public decimal Price { get; set; }
         public decimal MarketCap { get; set; }
+        public int? Hits { get; set; }
 
         public static async Task<DateTimeOffset?> GetLastUpdateDateAsync(int coinID)
         {
@@ -29,7 +30,7 @@ SELECT TOP 1 LogDate FROM dbo.CryptoDetails WHERE CoinId = @coinID ORDER BY LogD
             {
                 return (await conn.QueryAsync<CryptoDataPoint>(@"
 SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-SELECT LogDate, Volume, Price, MarketCap FROM dbo.CryptoDetails
+SELECT LogDate, Volume, Price, MarketCap, Hits FROM dbo.CryptoDetails
 WHERE CoinId = @coinID AND LogDate BETWEEN @from AND @to ORDER BY LogDate ASC", new { from, to, coinID })).AsList();
             }
         }
@@ -54,13 +55,19 @@ WHERE CoinId = @coinID AND LogDate BETWEEN @from AND @to ORDER BY LogDate ASC", 
             using (var connection = Context.OpenDatabaseConnection())
             {
                 await connection.ExecuteAsync(@"
-INSERT INTO dbo.CryptoDetails (CoinId, LogDate, Volume, Price, MarketCap)
+DECLARE @vCoinID INT = @CoinID
+        ,@LatestHits INT
+
+SELECT @LatestHits = Hits FROM dbo.CryptoCurrency WITH(NOLOCK) WHERE Id = @vCoinID
+
+INSERT INTO dbo.CryptoDetails (CoinId, LogDate, Volume, Price, MarketCap, Hits)
 SELECT
-    @CoinID,
+    @vCoinID,
     LogDate,
     Volume,
     Price,
-    MarketCap
+    MarketCap,
+    @LatestHits
 FROM
     @data", new { CoinId = coinID, data = dt.AsTableValuedParameter("dbo.TVP_CryptoData") });
             }

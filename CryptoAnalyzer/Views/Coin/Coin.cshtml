@@ -85,6 +85,7 @@
 </div>
 <div id="chartContainerPrice" class="chart mx-auto"></div>
 <div id="chartContainerVolume" class="chart mx-auto"></div>
+<div id="chartContainerHits" class="chart mx-auto"></div>
 <div class="form-group">
     <label class="statsSubLabel" for="notesTextbox">Notes:</label>
     <textarea class="form-control" id="notesTextbox" rows="3">@Model.Coin.Details</textarea>
@@ -100,6 +101,10 @@
         if (@Json.Serialize(Model.VolumeSeries.Any())) {
              mySite.addNewMultiSeriesCanvasChart("chartContainerVolume", "Daily Volume", @Html.Raw(JsonConvert.SerializeObject(Model.VolumeSeries)),
                 "Today", @Html.Raw(JsonConvert.SerializeObject(Model.VolumeSeriesYesterday)), "Yesterday");
+        }
+        if (@Json.Serialize(Model.HitsSeries.Any())) {
+            mySite.addNewSingleSeriesCanvasChart("chartContainerHits", "Daily Total Hits", @Html.Raw(JsonConvert.SerializeObject(Model.HitsSeries)),
+                "Today");
         }
 
         mySite.handleSpotlightCheckbox(@Model.Coin.Id);
