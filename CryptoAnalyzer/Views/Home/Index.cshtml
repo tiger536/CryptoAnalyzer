@@ -37,10 +37,21 @@
                         {
                             <small class="small">@importantCoin.LastTalkedAbout.Value.LocalDateTime</small>
                         }
-                        @if(importantCoin.Hits > 0)
+                        @if (importantCoin.Hits > 0)
                         {
                             <span class="badge badge-primary badge-pill">@importantCoin.Hits</span>
                         }
+                    </div>
+                </a>
+            }
+
+            <div class="navbar-brand"><p class="secondary-heading">Latest Defi Coins</p></div>
+            @foreach (var defiCoin in Model.LatestDefiCoins.OrderByDescending(x => x.CreatedAt).ToList())
+            {
+                <a href="@defiCoin.Url" class="list-group-item list-group-item-action list-group-item-dark d-inline-flex">
+                    <span class="coinName">@defiCoin.Token0Code</span>
+                    <div class="cont">
+                        <small class="small">@defiCoin.CreatedAt.LocalDateTime</small>
                     </div>
                 </a>
             }

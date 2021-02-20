@@ -27,6 +27,8 @@ namespace CryptoAnalyzer.Models
             || Name.Contains("USD")
             || Name.Contains("BTC")
             || Name.Contains("ETH")
+            || Name.Contains("[Old")
+            || Name.Contains("(Old")
             || Name.Contains("Cash")
             || Name.Contains("yield", StringComparison.InvariantCultureIgnoreCase)
             || Name.Contains("synthetic", StringComparison.InvariantCultureIgnoreCase)
@@ -53,7 +55,7 @@ namespace CryptoAnalyzer.Models
             return coin.Code.Equals(this.Code) && coin.Name.Equals(this.Name) && coin.Symbol.Equals(this.Symbol);
         }
 
-        public static async Task SetSpotlight(bool spotlight, int coinID)
+        public static async Task SetSpotlightAsync(bool spotlight, int coinID)
 		{
             using(var conn = Context.OpenDatabaseConnection())
 			{
@@ -64,7 +66,7 @@ WHERE Id = @coinID", new { spotlight, coinID });
 			}
 		}
 
-        public static async Task SetIgnored(bool ignored, int coinID)
+        public static async Task SetIgnoredAsync(bool ignored, int coinID)
         {
             using (var conn = Context.OpenDatabaseConnection())
             {
@@ -75,7 +77,7 @@ WHERE Id = @coinID", new { ignored, coinID });
             }
         }
 
-        public static async Task SetNotes(string notes, int coinID)
+        public static async Task SetNotesAsync(string notes, int coinID)
         {
             using (var conn = Context.OpenDatabaseConnection())
             {
@@ -86,7 +88,7 @@ WHERE Id = @coinID", new { coinID, data = new DbString() {IsAnsi = false ,Value 
             }
         }
 
-        public static async Task SetTalkedAbout(Dictionary<string,int> possibleCoinsNewReplies)
+        public static async Task SetTalkedAboutAsync(Dictionary<string,int> possibleCoinsNewReplies)
         {
             var dt = new DataTable();
             dt.Columns.Add("Code", typeof(string));
@@ -139,7 +141,7 @@ FROM
             dt.Dispose();
         }
 
-        public static async Task<Coin> GetByCode(string code)
+        public static async Task<Coin> GetByCodeAsync(string code)
         {
             using (var conn = Context.OpenDatabaseConnection())
             {

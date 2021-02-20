@@ -36,7 +36,6 @@ namespace CryptoAnalyzer
             services.AddSingleton<TelegramBot>();
             services.AddHostedService(provider => provider.GetService<TelegramBot>());
             services.AddHostedService<BackgroundTaskService>();
-
             services.AddControllersWithViews();
         }
 

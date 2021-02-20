@@ -13,7 +13,7 @@ namespace CryptoAnalyzer.Controllers
         [Route("Coins/{code?}")]
         public async Task<IActionResult> DetailsAsync(string code)
         {
-            var coin = await Coin.GetByCode(code);
+            var coin = await Coin.GetByCodeAsync(code);
             if (coin is object)
             {
                 var pointsRaw = await CryptoDataPoint.GetTimeframeAsync(DateTimeOffset.Now.AddDays(-1), DateTimeOffset.UtcNow, coin.Id);
@@ -58,7 +58,7 @@ namespace CryptoAnalyzer.Controllers
 		{
             try
 			{
-                await Coin.SetSpotlight(important, coinID);
+                await Coin.SetSpotlightAsync(important, coinID);
                 return Ok();
 			}
             catch(Exception e)
@@ -74,7 +74,7 @@ namespace CryptoAnalyzer.Controllers
         {
             try
             {
-                await Coin.SetIgnored(ignore, coinID);
+                await Coin.SetIgnoredAsync(ignore, coinID);
                 return Ok();
             }
             catch (Exception e)
@@ -90,7 +90,7 @@ namespace CryptoAnalyzer.Controllers
         {
             try
             {
-                await Coin.SetNotes(notes, coinID);
+                await Coin.SetNotesAsync(notes, coinID);
                 return Ok();
             }
             catch (Exception e)

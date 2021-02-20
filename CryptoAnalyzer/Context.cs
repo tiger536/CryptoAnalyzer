@@ -1,5 +1,6 @@
 ﻿using CryptoAnalyzer.Chan;
 using CryptoAnalyzer.CoinGecko;
+using CryptoAnalyzer.Defi;
 using CryptoAnalyzer.Service;
 using Dapper;
 using Microsoft.AspNetCore.Hosting;
@@ -13,6 +14,7 @@ namespace CryptoAnalyzer
     {
         public static CoinGeckoConfiguration CoinGeckoConfiguration { get; private set; }
         public static ChanConfiguration ChanConfiguration { get; private set; }
+        public static DefiConfiguration DefiConfiguration { get; private set; }
         public static TelegramConfiguration TelegramBotConfiguration { get; private set; }
         private static string _sqlConnectionString = default!;
         public const int COIN_DAYS = -5;
@@ -22,7 +24,8 @@ namespace CryptoAnalyzer
         {
             _sqlConnectionString = configuration.GetConnectionString("DefaultConnection");
             CoinGeckoConfiguration = configuration.GetSection("CoinGecko").Get<CoinGeckoConfiguration>();
-            ChanConfiguration = configuration.GetSection("ChanAPI").Get<ChanConfiguration>();
+			ChanConfiguration = configuration.GetSection("ChanAPI").Get<ChanConfiguration>();
+            DefiConfiguration = configuration.GetSection("Defi").Get<DefiConfiguration>();
             TelegramBotConfiguration = configuration.GetSection("Telegram").Get<TelegramConfiguration>();
 
             using(var conn = OpenDatabaseConnection())

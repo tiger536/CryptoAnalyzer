@@ -25,7 +25,7 @@ namespace CryptoAnalyzer.Chan
 
         public async Task ScrapAsync()
         {
-            var bizThreadsData = await ThreadData.GetFromDB();
+            var bizThreadsData = await ThreadData.GetFromDBAsync();
             while (!_globalCancellation.Token.IsCancellationRequested)
             {
                 try
@@ -63,8 +63,8 @@ namespace CryptoAnalyzer.Chan
                             }
                         }
 					}
-                    await Coin.SetTalkedAbout(possibleCoinsNewReplies);
-                    await ThreadData.CleanAndStore(bizThreadsData);
+                    await Coin.SetTalkedAboutAsync(possibleCoinsNewReplies);
+                    await ThreadData.CleanAndStoreAsync(bizThreadsData);
                 }
                 catch (Exception e)
                 {

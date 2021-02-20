@@ -7,5 +7,6 @@ namespace CryptoAnalyzer.Models
 		public int NewCoinThresold { get; set; }
 		public List<Coin> Coins { get; set; }
 		public List<Coin> InternetBuzzCoins { get; set; }
+		public List<Pair> LatestDefiCoins { get; set; }
 	}
 }

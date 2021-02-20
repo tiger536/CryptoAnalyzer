@@ -13,7 +13,7 @@ namespace CryptoAnalyzer.Chan
 		public int Replies { get; set; }
 		public DateTimeOffset LastUpdate { get; set; }
 
-		public static async Task<Dictionary<int, ThreadData>> GetFromDB()
+		public static async Task<Dictionary<int, ThreadData>> GetFromDBAsync()
 		{
 			using(var conn = Context.OpenDatabaseConnection())
 			{
@@ -21,7 +21,7 @@ namespace CryptoAnalyzer.Chan
 			}
 		}
 
-		public static async Task CleanAndStore(Dictionary<int, ThreadData> threadData)
+		public static async Task CleanAndStoreAsync(Dictionary<int, ThreadData> threadData)
 		{
 			var cleanDic = threadData.Where(x => x.Value.LastUpdate > DateTimeOffset.UtcNow.AddDays(-1)).ToDictionary(x=>x.Key, x=> x.Value);
 			using (var conn = Context.OpenDatabaseConnection())
