@@ -41,7 +41,8 @@ namespace CryptoAnalyzer.CoinGecko
                     var internetBuzzCoins = GetNewBuzzToGrab(await Coin.GetInternetBuzzCoinsAsync(DateTimeOffset.UtcNow.AddDays(Context.COIN_DAYS)),Context.MAX_CONCURRENT_COINS - importantCoins.Count);
                     importantCoins.AddRange(internetBuzzCoins);
 
-                    var coins = importantCoins.Where(x => !x.IsUseless() && (!noDataCoins.ContainsKey(x.Id) || tryAgainCoins.Contains(x.Id))).ToList();
+                    var coins = importantCoins.Where(x => (!x.IsUseless() || x.UnderSpotlight)
+                                    && (!noDataCoins.ContainsKey(x.Id) || tryAgainCoins.Contains(x.Id))).ToList();
 
                     foreach(var coinID in tryAgainCoins)
 					{

@@ -143,3 +143,8 @@ body {
   background-color: #2b2b2b;
   border-color: #999;
 }
+.notes {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}

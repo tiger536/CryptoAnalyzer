@@ -24,7 +24,8 @@ namespace CryptoAnalyzer.Controllers
 				{
                     priceSeries.Add(new DataPoint(point.LogDate.ToUnixTimeMilliseconds(), point.Price));
                     volumeSeries.Add(new DataPoint(point.LogDate.ToUnixTimeMilliseconds(), point.Volume));
-                    hitsSeries.Add(new DataPoint(point.LogDate.ToUnixTimeMilliseconds(), point.Hits));
+                    if(point.Hits > 0)
+                        hitsSeries.Add(new DataPoint(point.LogDate.ToUnixTimeMilliseconds(), point.Hits));
                 }
                 var pointsRawYesterday = await CryptoDataPoint.GetTimeframeAsync(DateTimeOffset.UtcNow.AddDays(-2), DateTimeOffset.UtcNow.AddDays(-1), coin.Id);
                 var priceSeriesYesterday = new List<DataPoint>();

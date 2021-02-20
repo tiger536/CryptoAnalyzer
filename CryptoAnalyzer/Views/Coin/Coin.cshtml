@@ -85,8 +85,11 @@
 </div>
 <div id="chartContainerPrice" class="chart mx-auto"></div>
 <div id="chartContainerVolume" class="chart mx-auto"></div>
-<div id="chartContainerHits" class="chart mx-auto"></div>
-<div class="form-group">
+@if (Model.HitsSeries.Any()) {
+    <div id="chartContainerHits" class="chart mx-auto"></div>
+}
+
+<div class="form-group notes">
     <label class="statsSubLabel" for="notesTextbox">Notes:</label>
     <textarea class="form-control" id="notesTextbox" rows="3">@Model.Coin.Details</textarea>
     <button type="button" id="btnNotes" class="btn btn-primary">Set</button>

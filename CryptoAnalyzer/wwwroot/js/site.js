@@ -57,7 +57,6 @@
                 type: "line",
                 color: "#037ffc",
                 name: series1Name,
-                yValueFormatString: "$#,##0.##",
                 xValueFormatString: "HH:mm",
                 xValueType: "dateTime",
                 dataPoints: series1
