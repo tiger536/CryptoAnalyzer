@@ -2,7 +2,9 @@
 {
 	public class DefiConfiguration
 	{
-		public string UniswapBaseUrl { get; set; }
-		public string UniswapGraphQLUrl { get; set; }
+		public string UniSwapBaseUrl { get; set; }
+		public string PancakeSwapBaseUrl { get; set; }
+		public string UniSwapGraphQLUrl { get; set; }
+		public string PancakeSwapGraphQLUrl { get; set; }
 	}
 }

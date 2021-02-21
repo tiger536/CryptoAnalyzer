@@ -14,7 +14,7 @@ namespace CryptoAnalyzer.Models
 		public string Token0Id { get; set; }
 		public string Token0Code { get; set; }
 		public DateTimeOffset CreatedAt { get; set; }
-        public string Url => $"{Context.DefiConfiguration.UniswapBaseUrl}{Token0Id}";
+        public string Url => $"{(ExchangeId == DefiExchange.UniSwap ? Context.DefiConfiguration.UniSwapBaseUrl : Context.DefiConfiguration.PancakeSwapBaseUrl)}{Token0Id}";
 
 		public static async Task<List<Pair>>GetPairsAsync()
 		{

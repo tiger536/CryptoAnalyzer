@@ -1,4 +1,5 @@
 using CryptoAnalyzer.CoinGecko;
+using CryptoAnalyzer.Defi;
 using CryptoAnalyzer.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,6 +34,8 @@ namespace CryptoAnalyzer
             {
                 client.BaseAddress = new Uri(Context.CoinGeckoConfiguration.ApiBaseUrl);
             });
+            
+            services.AddSingleton<DefiQLClient>();
             services.AddSingleton<TelegramBot>();
             services.AddHostedService(provider => provider.GetService<TelegramBot>());
             services.AddHostedService<BackgroundTaskService>();

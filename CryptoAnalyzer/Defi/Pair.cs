@@ -20,7 +20,7 @@ namespace CryptoAnalyzer.Defi
         public string token1Price { get; set; }
     }
 
-    public class UniswapData
+    public class UniSwapData
     {
         public List<Pair> pairs { get; set; }
     }

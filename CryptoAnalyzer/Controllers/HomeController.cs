@@ -15,7 +15,7 @@ namespace CryptoAnalyzer.Controllers
                 NewCoinThresold = Context.COIN_DAYS,
                 Coins = await Coin.GetImportantCoinsAsync(DateTimeOffset.UtcNow.AddDays(Context.COIN_DAYS)),
                 InternetBuzzCoins = await Coin.GetInternetBuzzCoinsAsync(DateTimeOffset.UtcNow.AddDays(Context.COIN_DAYS)),
-                LatestDefiCoins = await Pair.GetLatest(DateTimeOffset.UtcNow.AddDays(-2))
+                LatestDefiCoins = await Pair.GetLatest(DateTimeOffset.UtcNow.AddDays(Context.COIN_DAYS))
             });
         }
 

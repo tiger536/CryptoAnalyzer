@@ -18,12 +18,12 @@ namespace CryptoAnalyzer.CoinGecko
         private static CoinListGrabber _coinListGrabber;
         private static ThreadScraper _threadScraper;
         private static DefiScraper _defiScraper;
-        public BackgroundTaskService(ThrottledHttpClient throttledhttpClient, TelegramBot telegramApi, HttpClient httpClient)
+        public BackgroundTaskService(ThrottledHttpClient throttledhttpClient, TelegramBot telegramApi, HttpClient httpClient, DefiQLClient defiQLClient)
         {
             _spotlighter = new SpotlightHandler(throttledhttpClient, telegramApi);
             _coinListGrabber = new CoinListGrabber(throttledhttpClient, telegramApi);
             _threadScraper = new ThreadScraper(httpClient);
-            _defiScraper = new DefiScraper(telegramApi);
+            _defiScraper = new DefiScraper(telegramApi, defiQLClient);
         }
         public Task StartAsync(CancellationToken cancellationToken)
         {
