@@ -14,6 +14,7 @@ BEGIN
 		LastTalkedAbout DATETIMEOFFSET NULL,
 		Ignore BIT NOT NULL CONSTRAINT [DF_CryptoCurrency_Ignore] DEFAULT((0)),
 		Hits INT NOT NULL CONSTRAINT [DF_CryptoCurrency_Hits] DEFAULT((0)),
+		FastRefresh BIT NOT NULL CONSTRAINT [DF_CryptoCurrency_FastRefresh] DEFAULT((0)),
 		Details NVARCHAR(MAX) NULL
 	)
 END

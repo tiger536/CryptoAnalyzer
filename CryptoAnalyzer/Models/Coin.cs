@@ -18,6 +18,7 @@ namespace CryptoAnalyzer.Models
         public DateTimeOffset? LastTalkedAbout { get; set; }
         public bool UnderSpotlight { get; set; }
         public bool Ignore { get; set; }
+        public bool FastRefresh { get; set; }
         public int Hits { get; set; }
         public string Details { get; set; }
 
@@ -74,6 +75,17 @@ WHERE Id = @coinID", new { spotlight, coinID });
 UPDATE dbo.CryptoCurrency
 SET Ignore = @ignored
 WHERE Id = @coinID", new { ignored, coinID });
+            }
+        }
+
+        public static async Task SetFastRefreshAsync(bool fastRefresh, int coinID)
+        {
+            using (var conn = Context.OpenDatabaseConnection())
+            {
+                await conn.ExecuteAsync(@"
+UPDATE dbo.CryptoCurrency
+SET FastRefresh = @fastRefresh
+WHERE Id = @coinID", new { fastRefresh, coinID });
             }
         }
 
@@ -157,6 +169,7 @@ SELECT
     LastTalkedAbout,
     Ignore,
     Hits,
+    FastRefresh,
     Details
 FROM
     dbo.CryptoCurrency
@@ -180,6 +193,7 @@ SELECT
     LastTalkedAbout,
     Ignore,
     Hits,
+    FastRefresh,
     Details
 FROM
     dbo.CryptoCurrency")).ToHashSet();
@@ -202,6 +216,7 @@ SELECT
     LastTalkedAbout,
     Ignore,
     Hits,
+    FastRefresh,
     Details
 FROM
     dbo.CryptoCurrency
@@ -209,6 +224,31 @@ WHERE
     Ignore = 0
     AND (DateAdded >= @from
     OR UnderSpotlight = 1)", new { from })).AsList();
+            }
+        }
+
+        public static async Task<List<Coin>> GetFastRefreshCoinsAsync()
+        {
+            using (var conn = Context.OpenDatabaseConnection())
+            {
+                return (await conn.QueryAsync<Coin>(@"
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+SELECT
+    Id,
+    Code,
+    Symbol,
+    Name,
+    DateAdded,
+    UnderSpotlight,
+    LastTalkedAbout,
+    Ignore,
+    Hits,
+    FastRefresh,
+    Details
+FROM
+    dbo.CryptoCurrency
+WHERE
+    FastRefresh = 1")).AsList();
             }
         }
 
@@ -228,6 +268,7 @@ SELECT
     LastTalkedAbout,
     Ignore,
     Hits,
+    FastRefresh
     Details
 FROM
     dbo.CryptoCurrency
@@ -244,9 +285,9 @@ WHERE
             using (var conn = Context.OpenDatabaseConnection())
             {
                 await conn.ExecuteAsync(@"
-INSERT INTO dbo.CryptoCurrency(Code, Symbol, Name, MarketCapRank, DateAdded, LastTalkedAbout, Ignore, Hits, Details)
+INSERT INTO dbo.CryptoCurrency(Code, Symbol, Name, MarketCapRank, DateAdded, LastTalkedAbout, Ignore, Hits, FastRefresh, Details)
 VALUES
-(@Code, @Symbol, @Name, @MarketCapRank, SYSDATETIMEOFFSET(), NULL, 0, 0, NULL)", new
+(@Code, @Symbol, @Name, @MarketCapRank, SYSDATETIMEOFFSET(), NULL, 0, 0, 0, NULL)", new
                 {
                     Code = new DbString()
                     {

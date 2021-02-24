@@ -71,6 +71,22 @@ namespace CryptoAnalyzer.Controllers
         }
 
         [HttpPost]
+        [Route("Coins/FastUpdate")]
+        public async Task<IActionResult> FastRefresh(bool fastUpdate, int coinID)
+        {
+            try
+            {
+                await Coin.SetFastRefreshAsync(fastUpdate, coinID);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                await e.LogAsync(HttpContext);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost]
         [Route("Coins/Notes")]
         public async Task<IActionResult> SetNotes(string notes, int coinID)
         {

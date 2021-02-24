@@ -82,6 +82,15 @@
             });
         });
     },
+    handleFastRefreshCheckbox: function (coinID) {
+        $("#fastRefreshCheckbox").change(function () {
+            $.ajax({
+                url: '/Coins/FastUpdate',
+                data: { 'fastUpdate': this.checked, 'coinID': coinID },
+                type: "post"
+            });
+        });
+    },
     handleNotesTextbox: function (coinID) {
         $("#btnNotes").click(function () {
             $.ajax({

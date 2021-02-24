@@ -30,6 +30,11 @@ namespace CryptoAnalyzer
             Context.Initialize(Configuration, Environment);
 
             services.AddHttpClient();
+            services.AddHttpClient("CoinMarketCap", c =>
+            {
+                c.BaseAddress = new Uri(Context.CoinMarketCapConfiguration.ApiBaseUrl);
+                c.DefaultRequestHeaders.Add("X-CMC_PRO_API_KEY", Context.CoinMarketCapConfiguration.ApiKey);
+            });
             services.AddHttpClient<ThrottledHttpClient>(client =>
             {
                 client.BaseAddress = new Uri(Context.CoinGeckoConfiguration.ApiBaseUrl);

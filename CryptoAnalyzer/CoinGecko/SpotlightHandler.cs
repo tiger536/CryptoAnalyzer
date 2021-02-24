@@ -21,7 +21,7 @@ namespace CryptoAnalyzer.CoinGecko
         private readonly HashSet<int> notificationsCoins = new HashSet<int>();
         private readonly Dictionary<int, DateTimeOffset> noDataCoins = new Dictionary<int, DateTimeOffset>();
         private static Dictionary<int, DateTimeOffset> buzzCoinsLastGrab = new Dictionary<int, DateTimeOffset>();
-        private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(7).TotalMilliseconds;
+        private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(6).TotalMilliseconds;
 
         public SpotlightHandler(ThrottledHttpClient client, TelegramBot telegramBot)
         {
@@ -37,8 +37,8 @@ namespace CryptoAnalyzer.CoinGecko
                 while (!_globalCancellation.Token.IsCancellationRequested)
                 {
                     var tryAgainCoins = noDataCoins.Where(x => DateTimeOffset.UtcNow >= x.Value).Select(x => x.Key).ToHashSet();
-                    var importantCoins = await Coin.GetImportantCoinsAsync(DateTimeOffset.UtcNow.AddDays(Context.COIN_DAYS));
-                    var internetBuzzCoins = GetNewBuzzToGrab(await Coin.GetInternetBuzzCoinsAsync(DateTimeOffset.UtcNow.AddDays(Context.COIN_DAYS)),Context.MAX_CONCURRENT_COINS - importantCoins.Count);
+                    var importantCoins = (await Coin.GetImportantCoinsAsync(DateTimeOffset.UtcNow.AddDays(Context.COIN_DAYS))).Where(x=> !x.FastRefresh).ToList();
+                    var internetBuzzCoins = GetNewBuzzToGrab(await Coin.GetInternetBuzzCoinsAsync(DateTimeOffset.UtcNow.AddDays(Context.COIN_DAYS)), Context.MAX_CONCURRENT_COINS - importantCoins.Count);
                     importantCoins.AddRange(internetBuzzCoins);
 
                     var coins = importantCoins.Where(x => (!x.IsUseless() || x.UnderSpotlight)

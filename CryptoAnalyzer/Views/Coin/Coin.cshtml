@@ -80,6 +80,10 @@
                 @Html.CheckBoxFor(model => model.Coin.Ignore, new { @class = "form-check-input", @id = "ignoredCheckbox" })
                 <label class="form-check-label statsSubLabel" for="ignoredCheckbox">Ignore</label>
             </div>
+            <div class="form-check">
+                @Html.CheckBoxFor(model => model.Coin.FastRefresh, new { @class = "form-check-input", @id = "fastRefreshCheckbox" })
+                <label class="form-check-label statsSubLabel" for="fastRefreshCheckbox">Fast Update</label>
+            </div>
         </div>
     </div>
 </div>
@@ -129,6 +133,7 @@
 
         mySite.handleSpotlightCheckbox(@Model.Coin.Id);
         mySite.handleIgnoredCheckbox(@Model.Coin.Id);
+        mySite.handleFastRefreshCheckbox(@Model.Coin.Id);
         mySite.handleNotesTextbox(@Model.Coin.Id);
      });
 </script>
