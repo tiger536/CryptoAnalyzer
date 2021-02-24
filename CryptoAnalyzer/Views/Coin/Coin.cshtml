@@ -85,7 +85,16 @@
 </div>
 <div id="chartContainerPrice" class="chart mx-auto"></div>
 <div id="chartContainerVolume" class="chart mx-auto"></div>
-@if (Model.HitsSeries.Any()) {
+@if (Model.RSI.Any())
+{
+    <div id="chartContainerRSI" class="chart mx-auto"></div>
+}
+@if (Model.OBV.Any())
+{
+    <div id="chartContainerOBV" class="chart mx-auto"></div>
+}
+@if (Model.HitsSeries.Any())
+{
     <div id="chartContainerHits" class="chart mx-auto"></div>
 }
 
@@ -107,6 +116,14 @@
         }
         if (@Json.Serialize(Model.HitsSeries.Any())) {
             mySite.addNewSingleSeriesCanvasChart("chartContainerHits", "Daily Total Hits", @Html.Raw(JsonConvert.SerializeObject(Model.HitsSeries)),
+                "Today");
+        }
+        if (@Json.Serialize(Model.RSI.Any())) {
+            mySite.addNewSingleSeriesCanvasChart("chartContainerRSI", "RSI", @Html.Raw(JsonConvert.SerializeObject(Model.RSI)),
+                "Today");
+        }
+        if (@Json.Serialize(Model.OBV.Any())) {
+            mySite.addNewSingleSeriesCanvasChart("chartContainerOBV", "OBV", @Html.Raw(JsonConvert.SerializeObject(Model.OBV)),
                 "Today");
         }
 

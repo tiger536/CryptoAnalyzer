@@ -22,6 +22,7 @@
       </Compile>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Cryptowatcher.TA-LIb-Core" Version="1.0.0" />
     <PackageReference Include="Dapper" Version="2.0.78" />
     <PackageReference Include="GraphQL.Client" Version="3.2.1" />
     <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.2.1" />

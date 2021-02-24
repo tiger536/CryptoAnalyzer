@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using StackExchange.Exceptional;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -17,34 +16,21 @@ namespace CryptoAnalyzer.Controllers
             if (coin is object)
             {
                 var pointsRaw = await CryptoDataPoint.GetTimeframeAsync(DateTimeOffset.Now.AddDays(-1), DateTimeOffset.UtcNow, coin.Id);
-                var priceSeries = new List<DataPoint>();
-                var volumeSeries = new List<DataPoint>();
-                var hitsSeries = new List<DataPoint>();
-                foreach (var point in pointsRaw)
-				{
-                    priceSeries.Add(new DataPoint(point.LogDate.ToUnixTimeMilliseconds(), point.Price));
-                    volumeSeries.Add(new DataPoint(point.LogDate.ToUnixTimeMilliseconds(), point.Volume));
-                    if(point.Hits > 0)
-                        hitsSeries.Add(new DataPoint(point.LogDate.ToUnixTimeMilliseconds(), point.Hits));
-                }
+                var todaySeries = CryptoDataPoint.GetSeries(pointsRaw);
+
                 var pointsRawYesterday = await CryptoDataPoint.GetTimeframeAsync(DateTimeOffset.UtcNow.AddDays(-2), DateTimeOffset.UtcNow.AddDays(-1), coin.Id);
-                var priceSeriesYesterday = new List<DataPoint>();
-                var volumeSeriesYesterday = new List<DataPoint>();
-                foreach (var point in pointsRawYesterday)
-                {
-                    //AddDays is a cheap trick to display all data points on the same scale
-                    priceSeriesYesterday.Add(new DataPoint(point.LogDate.AddDays(1).ToUnixTimeMilliseconds(), point.Price));
-                    volumeSeriesYesterday.Add(new DataPoint(point.LogDate.AddDays(1).ToUnixTimeMilliseconds(), point.Volume));
-                }
+                var yesterdaySeries = CryptoDataPoint.GetSeries(pointsRawYesterday, 1);
 
                 return View("~/Views/Coin/Coin.cshtml",new CoinViewModel()
                 {
                     Coin = coin,
-                    PriceSeries = priceSeries,
-                    VolumeSeries = volumeSeries,
-                    HitsSeries = hitsSeries,
-                    PriceSeriesYesterday = priceSeriesYesterday,
-                    VolumeSeriesYesterday = volumeSeriesYesterday,
+                    PriceSeries = todaySeries.priceSeries,
+                    VolumeSeries = todaySeries.volumeSeries,
+                    HitsSeries = todaySeries.hitsSeries,
+                    RSI = CryptoDataPoint.GetRSI(pointsRaw),
+                    OBV = CryptoDataPoint.GetOBV(pointsRaw),
+                    PriceSeriesYesterday = yesterdaySeries.priceSeries,
+                    VolumeSeriesYesterday = yesterdaySeries.volumeSeries,
                     CoinRecap = CoinRecap.GetRecap(pointsRaw, pointsRawYesterday)
                 });
             }

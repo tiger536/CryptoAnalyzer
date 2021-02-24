@@ -10,6 +10,8 @@ namespace CryptoAnalyzer.Models
 		public List<DataPoint> HitsSeries { get; set; }
 		public List<DataPoint> PriceSeriesYesterday { get; set; }
 		public List<DataPoint> VolumeSeriesYesterday { get; set; }
+		public List<DataPoint> RSI { get; set; }
+		public List<DataPoint> OBV { get; set; }
 		public CoinRecap CoinRecap { get; set; }
 	}
 }
