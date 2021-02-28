@@ -1,16 +1,27 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CryptoAnalyzer.Models
 {
     [JsonConverter(typeof(FooConverter))]
     public class ChartDataPoint
-	{
+    {
         public DateTimeOffset X { get; set; }
         public dynamic Y { get; set; }
-    }
 
+        public static List<ChartDataPoint> Aggregate(TimeSpan timeframe, List<ChartDataPoint> points)
+        {
+            return points.GroupBy(s => s.X.Ticks / timeframe.Ticks)
+                    .Select(s => new ChartDataPoint
+                    {
+                        X = DateTimeOffset.FromUnixTimeMilliseconds((long)s.Average(x => x.X.ToUnixTimeMilliseconds())),
+                        Y = (dynamic)s.Average(x => (double)x.Y)
+                    }).ToList();
+        }
+    }
     public class FooConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

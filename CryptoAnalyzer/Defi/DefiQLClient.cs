@@ -15,8 +15,8 @@ namespace CryptoAnalyzer.Defi
 		{
 			Exchanges = new Dictionary<DefiExchange, GraphQLHttpClient>()
 			{
-				{ DefiExchange.UniSwap, new GraphQLHttpClient(Context.DefiConfiguration.UniSwapGraphQLUrl, new NewtonsoftJsonSerializer()) },
-				{ DefiExchange.PancakeSwap, new GraphQLHttpClient(Context.DefiConfiguration.PancakeSwapGraphQLUrl, new NewtonsoftJsonSerializer()) }
+				{ DefiExchange.UniSwap, new GraphQLHttpClient(Context.DefiConfiguration.UniSwapGraphQLUrl, new NewtonsoftJsonSerializer()) }//,
+				//{ DefiExchange.PancakeSwap, new GraphQLHttpClient(Context.DefiConfiguration.PancakeSwapGraphQLUrl, new NewtonsoftJsonSerializer()) }
 			};
 		}
 

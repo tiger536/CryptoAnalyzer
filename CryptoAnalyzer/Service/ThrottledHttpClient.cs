@@ -48,7 +48,7 @@ namespace CryptoAnalyzer.Service
                 if(stopwatch.Elapsed > TimeSpan.FromSeconds(25))
 				{
                     //fuck
-                    new Exception($"Coingecko banned me ({stopwatch.Elapsed}). {partialPath}").LogNoContext();
+                    new Exception($"Coingecko may have banned me ({stopwatch.Elapsed}). {partialPath}").LogNoContext();
 				}
 
                 var delay = stopwatch.ElapsedMilliseconds > 1000 ? 0 : 1000 - stopwatch.ElapsedMilliseconds;

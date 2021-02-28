@@ -28,9 +28,9 @@ namespace CryptoAnalyzer.CoinMarketCap
         public string slug { get; set; }
         public int is_active { get; set; }
         public int is_fiat { get; set; }
-        public int circulating_supply { get; set; }
-        public int total_supply { get; set; }
-        public int max_supply { get; set; }
+        public long circulating_supply { get; set; }
+        public long total_supply { get; set; }
+        public long max_supply { get; set; }
         public DateTime date_added { get; set; }
         public int num_market_pairs { get; set; }
         public int cmc_rank { get; set; }

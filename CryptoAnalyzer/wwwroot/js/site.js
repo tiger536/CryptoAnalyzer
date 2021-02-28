@@ -1,5 +1,5 @@
 ﻿var mySite = {
-    addChart: function (chartContainer, chartTitle, series1, series1Name, series2, series2Name) {
+    addChart: function (chartContainer, chartTitle, series1, series1Name, series2, series2Name, groupedSeries) {
         var series = [];
         series.push({
             name: series1Name,
@@ -28,8 +28,14 @@
         Highcharts.stockChart(chartContainer, {
             chart: {
                 animation: false,
-                shadow: false
+                shadow: false,
+                events: {
+                    click: function (e) {
+                        $("#btnSwitch").click();
+                    }
+                }
             },
+            allSeries: [series1, groupedSeries],
             scrollbar: {
                 showFull: false
             },
@@ -58,7 +64,12 @@
             },
             chart: {
                 animation: false,
-                shadow: false
+                shadow: false,
+                events: {
+                    click: function (e) {
+                        $("#btnSwitch").click();
+                    }
+                }
             },
             scrollbar: {
                 showFull: false

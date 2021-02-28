@@ -126,7 +126,7 @@ namespace CryptoAnalyzer.CoinGecko
                     }
                     else if(notificationsCoins.Contains(coin.Id))
 					{
-                        await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.ConversationID, $"{coin.Code} ({coin.Name}) is now bad");
+                        //await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.ConversationID, $"{coin.Code} ({coin.Name}) is now bad");
                         notificationsCoins.Remove(coin.Id);
 					}
                 }

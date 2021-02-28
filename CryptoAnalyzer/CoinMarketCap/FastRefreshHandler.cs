@@ -54,12 +54,14 @@ namespace CryptoAnalyzer.CoinMarketCap
                         foreach (var coin in fastCoin)
                         {
                             var lastUpdateTime = await CryptoDataPoint.GetLastUpdateDateAsync(coin.Id);
-                            if (quotes.Data.ContainsKey(coin.Symbol.ToUpper()))
+                            if (lastUpdateTime > DateTimeOffset.UtcNow.AddMinutes(-30))
                             {
-                                var quote = quotes.Data[coin.Symbol.ToUpper()]?.Quote["USD"];
-                                if (lastUpdateTime < new DateTimeOffset(quote.LastUpdated) && quote is not null)
+                                if (quotes.Data.ContainsKey(coin.Symbol.ToUpper()))
                                 {
-                                    var dataPoints = new List<CryptoDataPoint>()
+                                    var quote = quotes.Data[coin.Symbol.ToUpper()]?.Quote["USD"];
+                                    if (lastUpdateTime < new DateTimeOffset(quote.LastUpdated) && quote is not null)
+                                    {
+                                        var dataPoints = new List<CryptoDataPoint>()
                                     {
                                         new CryptoDataPoint()
                                         {
@@ -69,7 +71,8 @@ namespace CryptoAnalyzer.CoinMarketCap
                                             MarketCap = (decimal)quote.MarketCap
                                         }
                                     };
-                                    await CryptoDataPoint.BulkInsertAsync(coin.Id, dataPoints);
+                                        await CryptoDataPoint.BulkInsertAsync(coin.Id, dataPoints);
+                                    }
                                 }
                             }
                         }

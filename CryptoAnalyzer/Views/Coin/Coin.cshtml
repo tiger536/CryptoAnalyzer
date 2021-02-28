@@ -93,12 +93,21 @@
         </div>
     </div>
 </div>
-
-<div id="chartContainerPrice" class="chart mx-auto"></div>
-@if (Model.RSI.Any())
-{
-    <div id="chartContainerRSI" class="chart mx-auto"></div>
-}
+<div id="1min">
+    <div id="chartContainerPrice" class="chart mx-auto bigchart"></div>
+    @if (Model.RSI.Any())
+    {
+        <div id="chartContainerRSI" class="chart mx-auto"></div>
+    }
+</div>
+<button type="button" id="btnSwitch" class="btn btn-primary">Standard</button>
+<div id="grouped">
+    <div id="chartContainerPriceGrouped" class="chart mx-auto bigchart"></div>
+    @if (Model.RSI.Any())
+    {
+        <div id="chartContainerRSIGrouped" class="chart mx-auto"></div>
+    }
+</div>
 @if (Model.OBV.Any())
 {
     <div id="chartContainerOBV" class="chart mx-auto"></div>
@@ -119,11 +128,15 @@
 <script>
     $(document).ready(function () {
         if (@Json.Serialize(Model.PriceSeries.Any())) {
-            mySite.addSeriesMACDChart("chartContainerPrice", "Daily Price", @Html.Raw(JsonConvert.SerializeObject(Model.PriceSeries)),
+            mySite.addSeriesMACDChart("chartContainerPrice", "Daily Price (Standard)", @Html.Raw(JsonConvert.SerializeObject(Model.PriceSeries)),
+                "Today");
+            mySite.addSeriesMACDChart("chartContainerPriceGrouped", "Daily Price (Grouped)", @Html.Raw(JsonConvert.SerializeObject(ChartDataPoint.Aggregate(TimeSpan.FromMinutes(5),Model.PriceSeries))),
                 "Today");
         }
         if (@Json.Serialize(Model.RSI.Any())) {
-            mySite.addChart("chartContainerRSI", "RSI", @Html.Raw(JsonConvert.SerializeObject(Model.RSI)),
+            mySite.addChart("chartContainerRSI", "RSI (Standard)", @Html.Raw(JsonConvert.SerializeObject(Model.RSI)),
+                "RSI");
+            mySite.addChart("chartContainerRSIGrouped", "RSI (Grouped)", @Html.Raw(JsonConvert.SerializeObject(ChartDataPoint.Aggregate(TimeSpan.FromMinutes(5), Model.RSI))),
                 "RSI");
         }
         if (@Json.Serialize(Model.OBV.Any())) {
@@ -143,6 +156,18 @@
                 "Today", @Html.Raw(JsonConvert.SerializeObject(Model.PriceSeriesYesterday)), "Yesterday");
         }
 
+        $("#grouped").hide();
+        $("#btnSwitch").hide();
+        $("#btnSwitch").click(function () {
+            if ($("#grouped").is(":visible")) {
+                $(this).html('Standard');
+            }
+            else {
+                $(this).html('Grouped');
+            }
+            $("#grouped").toggle();
+            $("#1min").toggle();
+        });
         mySite.handleSpotlightCheckbox(@Model.Coin.Id);
         mySite.handleIgnoredCheckbox(@Model.Coin.Id);
         mySite.handleFastRefreshCheckbox(@Model.Coin.Id);
