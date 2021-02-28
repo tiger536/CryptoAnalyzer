@@ -61,7 +61,7 @@ namespace CryptoAnalyzer.CoinGecko
                 {
                     e.LogNoContext();
                 }
-                await Task.Delay(TimeSpan.FromMinutes(20));
+                await Task.Delay(TimeSpan.FromMinutes(10));
             }
         }
 

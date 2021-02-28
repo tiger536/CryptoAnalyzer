@@ -21,7 +21,7 @@ namespace CryptoAnalyzer.CoinMarketCap
         private readonly HttpClient _client;
         private readonly TelegramBot _telegramBot;
         private readonly HashSet<int> notificationsCoins = new HashSet<int>();
-        private readonly double UPDATE_FREQUENCY = TimeSpan.FromSeconds(75).TotalMilliseconds;
+        private readonly double UPDATE_FREQUENCY = TimeSpan.FromSeconds(65).TotalMilliseconds;
 
         public FastRefreshHandler(HttpClient client, TelegramBot telegramBot)
         {
@@ -39,33 +39,39 @@ namespace CryptoAnalyzer.CoinMarketCap
                 {
                     stopwatch.Start();
                     var fastCoin = await Coin.GetFastRefreshCoinsAsync();
-                    var querystringParam = new Dictionary<string, string>
+                    if (fastCoin.Any())
                     {
-                        ["symbol"] = string.Join(",", fastCoin.Select(x=>x.Symbol)),
-                        ["skip_invalid"] = "true"
-                    };
+                        var querystringParam = new Dictionary<string, string>
+                        {
+                            ["symbol"] = string.Join(",", fastCoin.Select(x => x.Symbol)),
+                            ["skip_invalid"] = "true"
+                        };
 
-                    var resp = await _client.GetAsync(QueryHelpers.AddQueryString($"v1/cryptocurrency/quotes/latest", querystringParam));
-                    resp.EnsureSuccessStatusCode();
-                    var quotes = JsonConvert.DeserializeObject<LatestQuotes>(await resp.Content.ReadAsStringAsync());
+                        var resp = await _client.GetAsync(QueryHelpers.AddQueryString($"v1/cryptocurrency/quotes/latest", querystringParam));
+                        resp.EnsureSuccessStatusCode();
+                        var quotes = JsonConvert.DeserializeObject<LatestQuotes>(await resp.Content.ReadAsStringAsync());
 
-                    foreach(var coin in fastCoin)
-					{
-                        var lastUpdateTime = await CryptoDataPoint.GetLastUpdateDateAsync(coin.Id);
-                        var quote = quotes.Data[coin.Symbol]?.Quote["USD"];
-                        if(lastUpdateTime < new DateTimeOffset(quote.LastUpdated) && quote is not null)
-						{
-                            var dataPoints = new List<CryptoDataPoint>()
+                        foreach (var coin in fastCoin)
+                        {
+                            var lastUpdateTime = await CryptoDataPoint.GetLastUpdateDateAsync(coin.Id);
+                            if (quotes.Data.ContainsKey(coin.Symbol.ToUpper()))
                             {
-                                new CryptoDataPoint()
-								{
-                                    LogDate = new DateTimeOffset(quote.LastUpdated),
-                                    Volume = (decimal)quote.Volume24h,
-                                    Price = (decimal)quote.Price,
-                                    MarketCap = (decimal)quote.MarketCap
+                                var quote = quotes.Data[coin.Symbol.ToUpper()]?.Quote["USD"];
+                                if (lastUpdateTime < new DateTimeOffset(quote.LastUpdated) && quote is not null)
+                                {
+                                    var dataPoints = new List<CryptoDataPoint>()
+                                    {
+                                        new CryptoDataPoint()
+                                        {
+                                            LogDate = new DateTimeOffset(quote.LastUpdated),
+                                            Volume = (decimal)quote.Volume24h,
+                                            Price = (decimal)quote.Price,
+                                            MarketCap = (decimal)quote.MarketCap
+                                        }
+                                    };
+                                    await CryptoDataPoint.BulkInsertAsync(coin.Id, dataPoints);
                                 }
-                            };
-                            await CryptoDataPoint.BulkInsertAsync(coin.Id, dataPoints);
+                            }
                         }
                     }
                     stopwatch.Stop();

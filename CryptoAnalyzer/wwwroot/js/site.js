@@ -1,68 +1,134 @@
 ﻿var mySite = {
-    addNewMultiSeriesCanvasChart: function (chartContainer, chartTitle, series1, series1Name, series2, series2Name) {
-        var chart = new CanvasJS.Chart(chartContainer, {
-            theme: "dark2",
-            title: {
-                text: chartTitle
-            },
-            axisY: {
-                title: "USD",
-                titleFontSize: 24,
-                prefix: "$"
-            },
-            axisX: {
-                valueFormatString: "HH:mm",
-            },
-            toolTip: {
-                shared: true
-            },
-            data: [{
-                type: "line",
-                color: "#037ffc",
-                name: series1Name,
-                yValueFormatString: "$#,##0.##",
-                xValueFormatString: "HH:mm",
-                xValueType: "dateTime",
-                dataPoints: series1
-            },
-            {             
-                type: "line",
-                color: "green",
+    addChart: function (chartContainer, chartTitle, series1, series1Name, series2, series2Name) {
+        var series = [];
+        series.push({
+            name: series1Name,
+            data: series1,
+            lineWidth: 3,
+            animation: false,
+            shadow: false,
+            tooltip: {
+                valueDecimals: 2
+            }
+        });
+        if (series2) {
+            series.push({
                 name: series2Name,
-                yValueFormatString: "$#,##0.##",
-                xValueFormatString: "HH:mm",
-                xValueType: "dateTime",
-                dataPoints: series2
-            }]
-        });
-        chart.render();
-    },
-    addNewSingleSeriesCanvasChart: function (chartContainer, chartTitle, series1, series1Name) {
-        var chart = new CanvasJS.Chart(chartContainer, {
-            theme: "dark2",
+                data: series2,
+                lineWidth: 3,
+                animation: false,
+                shadow: false,
+                opacity: 0.5,
+                enableMouseTracking: false,
+                tooltip: {
+                    valueDecimals: 2
+                }
+            });
+        }
+        Highcharts.stockChart(chartContainer, {
+            chart: {
+                animation: false,
+                shadow: false
+            },
+            scrollbar: {
+                showFull: false
+            },
+            rangeSelector: {
+                selected: 1
+            },
             title: {
                 text: chartTitle
             },
-            axisY: {
-                title: "#",
-                titleFontSize: 24
+            navigator: {
+                enabled: false
             },
-            axisX: {
-                valueFormatString: "HH:mm",
+            time: {
+                timezoneOffset: (new Date()).getTimezoneOffset()
             },
-            toolTip: {
-                shared: true
+            yAxis: {
+                opposite: false
             },
-            data: [{
-                type: "line",
-                color: "#037ffc",
+            series: series
+        });
+    },
+    addSeriesMACDChart: function (chartContainer, chartTitle, series1, series1Name) {
+        Highcharts.stockChart(chartContainer, {
+            rangeSelector: {
+                selected: 1
+            },
+            chart: {
+                animation: false,
+                shadow: false
+            },
+            scrollbar: {
+                showFull: false
+            },
+            time: {
+                timezoneOffset: (new Date()).getTimezoneOffset()
+            },
+            yAxis: [{
+                height: '75%',
+                opposite: false,
+                resize: {
+                    enabled: true
+                },
+                labels: {
+                    align: 'right',
+                    x: -3
+                },
+                title: {
+                    text: '$'
+                }
+            },
+            {
+                top: '75%',
+                opposite: false,
+                height: '35%',
+                labels: {
+                    align: 'right',
+                    x: -3
+                },
+                offset: 0,
+                title: {
+                    text: 'MACD'
+                }
+            }],
+            xAxis: {
+                labels: {
+                    align: 'left'
+                }
+            },
+            navigator: {
+                enabled: false
+            },
+            title: {
+                text: chartTitle
+            },
+            series: [{
+                lineWidth: 3,
+                animation: false,
+                shadow: false,
+                id: 'price',
                 name: series1Name,
-                xValueFormatString: "HH:mm",
-                xValueType: "dateTime",
-                dataPoints: series1
+                data: series1
+            },
+            {
+                type: 'macd',
+                yAxis: 1,
+                animation: false,
+                linkedTo: 'price',
+                signalLine: {
+                    styles: {
+                        lineColor: '#fc0303'
+                    }
+                },
+                macdLine: {
+                    styles: {
+                        lineColor: '#001ae6'
+                    }
+                }            
             }]
         });
-        chart.render();
     },
     handleSpotlightCheckbox: function (coinID) {
         $("#spotlightCheckbox").change(function () {

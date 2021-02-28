@@ -77,48 +77,52 @@ FROM
             dt.Dispose();
         }
 
-        public static (List<DataPoint> priceSeries, List<DataPoint> volumeSeries, List<DataPoint> hitsSeries) GetSeries(List<CryptoDataPoint> points, int daysToAdd = 0)
+        public static (List<ChartDataPoint> priceSeries, List<ChartDataPoint> volumeSeries, List<ChartDataPoint> hitsSeries) GetSeries(List<CryptoDataPoint> points, int daysToAdd = 0)
 		{
-            var priceSeries = new List<DataPoint>();
-            var volumeSeries = new List<DataPoint>();
-            var hitsSeries = new List<DataPoint>();
+            var priceSeries = new List<ChartDataPoint>();
+            var volumeSeries = new List<ChartDataPoint>();
+            var hitsSeries = new List<ChartDataPoint>();
             foreach (var point in points)
             {
-                priceSeries.Add(new DataPoint(point.LogDate.AddDays(daysToAdd).ToUnixTimeMilliseconds(), point.Price));
-                volumeSeries.Add(new DataPoint(point.LogDate.AddDays(daysToAdd).ToUnixTimeMilliseconds(), point.Volume));
+                priceSeries.Add(new ChartDataPoint() { X = point.LogDate.AddDays(daysToAdd), Y = point.Price });
+                volumeSeries.Add(new ChartDataPoint() { X = point.LogDate.AddDays(daysToAdd), Y = point.Volume });
                 if (point.Hits > 0)
-                    hitsSeries.Add(new DataPoint(point.LogDate.AddDays(daysToAdd).ToUnixTimeMilliseconds(), point.Hits));
+                    hitsSeries.Add(new ChartDataPoint() { X = point.LogDate.AddDays(daysToAdd), Y = point.Hits });
             }
 
             return (priceSeries, volumeSeries, hitsSeries);
         }
 
-        public static List<DataPoint> GetRSI(List<CryptoDataPoint> points, int timeWindow = 14)
-		{
-            var rsi = new List<DataPoint>();
-            double[] outReal = new double[points.Count - timeWindow];
-            Core.Rsi(0, points.Count - 1, points.Select(x => (float)x.Price).ToArray(), timeWindow, out _, out int outNBElement, outReal);
-
-            for (int i = 0; i < outNBElement; i++)
+        public static List<ChartDataPoint> GetRSI(List<CryptoDataPoint> points, int timeWindow = 14)
+        {
+            var rsi = new List<ChartDataPoint>();
+            if (points.Count > timeWindow)
             {
-                rsi.Add(new DataPoint(points[i + timeWindow].LogDate.ToUnixTimeMilliseconds(), outReal[i]));
-            }
+                double[] outReal = new double[points.Count - timeWindow];
+                Core.Rsi(0, points.Count - 1, points.Select(x => (float)x.Price).ToArray(), timeWindow, out _, out int outNBElement, outReal);
 
+                for (int i = 0; i < outNBElement; i++)
+                {
+                    rsi.Add(new ChartDataPoint() { X= points[i + timeWindow].LogDate, Y = outReal[i] });
+                }
+            }
             return rsi;
         }
 
-        public static List<DataPoint> GetOBV(List<CryptoDataPoint> points)
+        public static List<ChartDataPoint> GetOBV(List<CryptoDataPoint> points)
         {
-            var obv = new List<DataPoint>();
-            double[] outReal = new double[points.Count];
-            Core.Obv(0, points.Count - 1, points.Select(x => (float)x.Price).ToArray(), 
-                points.Select(x => (float)x.Volume).ToArray(), out _, out int outNBElement, outReal);
-
-            for (int i = 0; i < outNBElement; i++)
+            var obv = new List<ChartDataPoint>();
+            if (points.Any())
             {
-                obv.Add(new DataPoint(points[i].LogDate.ToUnixTimeMilliseconds(), outReal[i]));
-            }
+                double[] outReal = new double[points.Count];
+                Core.Obv(0, points.Count - 1, points.Select(x => (float)x.Price).ToArray(),
+                    points.Select(x => (float)x.Volume).ToArray(), out _, out int outNBElement, outReal);
 
+                for (int i = 0; i < outNBElement; i++)
+                {
+                    obv.Add(new ChartDataPoint() { X = points[i].LogDate, Y =  outReal[i] });
+                }
+            }
             return obv;
         }
     }

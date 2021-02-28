@@ -36,7 +36,7 @@ namespace CryptoAnalyzer.Models
 				var order = lastHourHalfPoint.OrderBy(i => i.Volume).ToList();
 				var min = order.FirstOrDefault();
 				var max = order.LastOrDefault();
-				if(max.LogDate > min.LogDate && ((max.Price - min.Price)/min.Price) > 0.35M)
+				if(max.LogDate > min.LogDate && min.Price > 0 && ((max.Price - min.Price)/min.Price) > 0.35M)
 				{
 					hugeVolVar = true;
 				}

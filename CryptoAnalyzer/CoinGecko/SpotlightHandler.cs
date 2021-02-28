@@ -61,7 +61,7 @@ namespace CryptoAnalyzer.CoinGecko
                         var querystringParam = new Dictionary<string, string>
                         {
                             ["vs_currency"] = "usd",
-                            ["from"] = lastUpdateTime.Value.ToUnixTimeSeconds().ToString(),
+                            ["from"] = lastUpdateTime.Value.AddSeconds(1).ToUnixTimeSeconds().ToString(),
                             ["to"] = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
                         };
                         var coinDataByInterval = await _client.GetAsync<MarketChart>(QueryHelpers.AddQueryString($"coins/{coin.Code}/market_chart/range", querystringParam));
@@ -132,7 +132,6 @@ namespace CryptoAnalyzer.CoinGecko
                 }
                 else if(!noDataCoins.ContainsKey(coin.Id))
 				{
-                    new Exception($"No data point today for {coin.Code} ({coin.Name})").LogNoContext();
                     noDataCoins.Add(coin.Id, DateTimeOffset.UtcNow.AddHours(1)); //don't grab data for the next hour
 				}
             }
