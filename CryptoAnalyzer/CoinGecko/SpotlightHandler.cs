@@ -68,7 +68,9 @@ namespace CryptoAnalyzer.CoinGecko
                         if (coinDataByInterval is null) continue;
                         if (coinDataByInterval.HasDifferentSizes)
                         {
-                            throw new Exception("Data was not taken at the same time");
+                            new Exception("Data was have different sizes")
+                                .AddLogData("Coin", coin.Code).LogNoContext();
+                            continue;
                         }
 
                         var dataPoints = new List<CryptoDataPoint>();
