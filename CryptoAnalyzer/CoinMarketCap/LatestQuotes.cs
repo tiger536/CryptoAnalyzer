@@ -30,7 +30,7 @@ namespace CryptoAnalyzer.CoinMarketCap
         public int is_fiat { get; set; }
         public long circulating_supply { get; set; }
         public long total_supply { get; set; }
-        public long max_supply { get; set; }
+        public long? max_supply { get; set; }
         public DateTime date_added { get; set; }
         public int num_market_pairs { get; set; }
         public int cmc_rank { get; set; }

@@ -31,6 +31,7 @@ namespace CryptoAnalyzer.Models
             || Name.Contains("[Old")
             || Name.Contains("(Old")
             || Name.Contains("Cash")
+            || Name.Contains("erc20", StringComparison.InvariantCultureIgnoreCase)         
             || Name.Contains("yield", StringComparison.InvariantCultureIgnoreCase)
             || Name.Contains("synthetic", StringComparison.InvariantCultureIgnoreCase)
             || Name.Contains("dollar", StringComparison.InvariantCultureIgnoreCase)
