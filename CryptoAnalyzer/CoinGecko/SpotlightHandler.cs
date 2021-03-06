@@ -68,7 +68,7 @@ namespace CryptoAnalyzer.CoinGecko
                         if (coinDataByInterval is null) continue;
                         if (coinDataByInterval.HasDifferentSizes)
                         {
-                            new Exception("Data was have different sizes")
+                            new Exception("Data have different sizes")
                                 .AddLogData("Coin", coin.Code).LogNoContext();
                             continue;
                         }
@@ -122,7 +122,7 @@ namespace CryptoAnalyzer.CoinGecko
                     {                     
                         if (!notificationsCoins.Contains(coin.Id))
                         {
-                            await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.ConversationID, CreateMessage(recap,coin));
+                            //await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.ConversationID, CreateMessage(recap,coin));
                             notificationsCoins.Add(coin.Id);
                         }
                     }
