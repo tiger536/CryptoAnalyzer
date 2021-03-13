@@ -39,9 +39,9 @@ namespace CryptoAnalyzer.Service
 			}
 		}
 
-		public async Task SendMessageAsync(long chatID, string message)
+		public async Task SendMessageAsync(long chatID, string message, bool disableNotification = false)
 		{
-			await _telegramBotClient.SendTextMessageAsync(chatID, message);
+			await _telegramBotClient.SendTextMessageAsync(chatID, message, disableNotification: disableNotification);
 		}
 	}
 }
