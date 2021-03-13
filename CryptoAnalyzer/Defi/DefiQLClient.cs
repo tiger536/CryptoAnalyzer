@@ -55,6 +55,7 @@ namespace CryptoAnalyzer.Defi
 						PairId = x.id,
 						Token0Id = x.token0.id,
 						Token0Code = x.token0.name,
+						Token0Symbol = x.token0.symbol,
 						CreatedAt = DateTimeOffset.FromUnixTimeSeconds(x.createdAtTimestamp)
 					}));
 				}

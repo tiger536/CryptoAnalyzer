@@ -13,6 +13,7 @@ namespace CryptoAnalyzer.Models
 		public string PairId { get; set; }
 		public string Token0Id { get; set; }
 		public string Token0Code { get; set; }
+        public string Token0Symbol { get; set; }
 		public DateTimeOffset CreatedAt { get; set; }
         public string Url => $"{(ExchangeId == DefiExchange.UniSwap ? Context.DefiConfiguration.UniSwapBaseUrl : Context.DefiConfiguration.PancakeSwapBaseUrl)}{Token0Id}";
 
@@ -28,6 +29,7 @@ SELECT
     PairId,
     Token0Id,
     Token0Code,
+    Token0Symbol,
     CreatedAt
 FROM
     dbo.Pairs")).AsList();
@@ -46,11 +48,28 @@ SELECT
     PairId,
     Token0Id,
     Token0Code,
+    Token0Symbol,
     CreatedAt
 FROM
     dbo.Pairs
 WHERE
     CreatedAt >= @from", new { from })).AsList();
+            }
+        }
+
+        public static async Task<int>GetCloned(string tokenSymbol)
+		{
+            using (var conn = Context.OpenDatabaseConnection())
+            {
+                return await conn.ExecuteScalarAsync<int>(@"
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+DECLARE @symbol VARCHAR(50) = @tokenSymbol
+
+SELECT COUNT(*)
+FROM
+	dbo.Pairs
+WHERE
+	Token0Symbol = @symbol", new DbString() { IsAnsi = true, Length = 50, Value = tokenSymbol });
             }
         }
 
@@ -61,8 +80,8 @@ WHERE
                 foreach(var pair in pairs)
 				{
                    await conn.ExecuteAsync(@"
-INSERT INTO dbo.Pairs(ExchangeId,PairId,Token0Id,Token0Code,CreatedAt)
-VALUES (@ExchangeId,@PairId,@Token0Id,@Token0Code,@CreatedAt)", new { pair.ExchangeId,pair.PairId,pair.Token0Id,pair.Token0Code,pair.CreatedAt });
+INSERT INTO dbo.Pairs(ExchangeId,PairId,Token0Id,Token0Code,CreatedAt,Token0Symbol)
+VALUES (@ExchangeId,@PairId,@Token0Id,@Token0Code,@CreatedAt,@Token0Symbol)", new { pair.ExchangeId,pair.PairId,pair.Token0Id,pair.Token0Code,pair.CreatedAt,pair.Token0Symbol });
 				}
             }
         }

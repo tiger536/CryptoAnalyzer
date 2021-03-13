@@ -1,5 +1,4 @@
-﻿using CryptoAnalyzer.DTO.CoinGecko;
-using CryptoAnalyzer.Models;
+﻿using CryptoAnalyzer.Models;
 using CryptoAnalyzer.Service;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
@@ -9,7 +8,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +18,6 @@ namespace CryptoAnalyzer.CoinMarketCap
         private readonly CancellationTokenSource _globalCancellation;
         private readonly HttpClient _client;
         private readonly TelegramBot _telegramBot;
-        private readonly HashSet<int> notificationsCoins = new HashSet<int>();
         private readonly double UPDATE_FREQUENCY = TimeSpan.FromSeconds(65).TotalMilliseconds;
 
         public FastRefreshHandler(HttpClient client, TelegramBot telegramBot)
@@ -62,15 +59,15 @@ namespace CryptoAnalyzer.CoinMarketCap
                                     if (lastUpdateTime < new DateTimeOffset(quote.LastUpdated) && quote is not null)
                                     {
                                         var dataPoints = new List<CryptoDataPoint>()
-                                    {
-                                        new CryptoDataPoint()
                                         {
-                                            LogDate = new DateTimeOffset(quote.LastUpdated),
-                                            Volume = (decimal)quote.Volume24h,
-                                            Price = (decimal)quote.Price,
-                                            MarketCap = (decimal)quote.MarketCap
-                                        }
-                                    };
+                                            new CryptoDataPoint()
+                                            {
+                                                LogDate = new DateTimeOffset(quote.LastUpdated),
+                                                Volume = (decimal)quote.Volume24h,
+                                                Price = (decimal)quote.Price,
+                                                MarketCap = (decimal)quote.MarketCap
+                                            }
+                                        };
                                         await CryptoDataPoint.BulkInsertAsync(coin.Id, dataPoints);
                                     }
                                 }
