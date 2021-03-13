@@ -69,7 +69,7 @@ SELECT COUNT(*)
 FROM
 	dbo.Pairs
 WHERE
-	Token0Symbol = @symbol", new DbString() { IsAnsi = true, Length = 50, Value = tokenSymbol });
+	Token0Symbol = @symbol", new { tokenSymbol = new DbString() { IsAnsi = true, Length = 50, Value = tokenSymbol }});
             }
         }
 

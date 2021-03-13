@@ -122,7 +122,7 @@ namespace CryptoAnalyzer.CoinGecko
                     if(coin.UnderSpotlight)
 					{
                         var lastRSI = CryptoDataPoint.GetRSI(today).Last();
-                        if(lastRSI != null && lastRSI.Y <= 15)
+                        if(lastRSI != null && lastRSI.Y <= 15 && lastRSI.Y > 0)
 						{
                             if (!notificationsCoins.Contains(coin.Id))
                             {
