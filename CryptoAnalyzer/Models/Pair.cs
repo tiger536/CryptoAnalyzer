@@ -80,8 +80,17 @@ WHERE
                 foreach(var pair in pairs)
 				{
                    await conn.ExecuteAsync(@"
-INSERT INTO dbo.Pairs(ExchangeId,PairId,Token0Id,Token0Code,CreatedAt,Token0Symbol)
-VALUES (@ExchangeId,@PairId,@Token0Id,@Token0Code,@CreatedAt,@Token0Symbol)", new { pair.ExchangeId,pair.PairId,pair.Token0Id,pair.Token0Code,pair.CreatedAt,pair.Token0Symbol });
+INSERT INTO dbo.Pairs(ExchangeId, PairId, Token0Id, Token0Code, CreatedAt, Token0Symbol)
+VALUES (@ExchangeId,@PairId,@Token0Id,@Token0Code,@CreatedAt,@Token0Symbol)",
+                    new 
+                    { 
+                        pair.ExchangeId,
+                        PairId = new DbString() { IsAnsi = true, Length = 50, Value = pair.PairId },
+                        Token0Id = new DbString() { IsAnsi = true, Length = 50, Value = pair.Token0Id },
+                        Token0Code = new DbString() { IsAnsi = true, Length = 50, Value = pair.Token0Code },
+                        Token0Symbol = new DbString() { IsAnsi = true, Length = 50, Value = pair.Token0Symbol },
+                        pair.CreatedAt
+                    });
 				}
             }
         }
