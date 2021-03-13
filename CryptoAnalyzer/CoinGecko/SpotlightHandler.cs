@@ -48,7 +48,9 @@ namespace CryptoAnalyzer.CoinGecko
 					{
                         noDataCoins.Remove(coinID);
                     }
-                    
+
+                    coins = coins.Where(x => x.UnderSpotlight).ToList();
+
                     var waitTime = UPDATE_FREQUENCY / coins.Count;
                     var stopwatch = new Stopwatch();
                     foreach (var coin in coins)
@@ -117,20 +119,25 @@ namespace CryptoAnalyzer.CoinGecko
               
                 if (today.Any())
                 {
-                    var recap = CoinRecap.GetRecap(today, yesterday);
-                    if (recap.LastHourVolumeVariation >= 0.3M || recap.Last3HoursVolumeVariation >= 0.40M || recap.Last9HoursVolumeVariation >= 0.45M)
-                    {                     
-                        if (!notificationsCoins.Contains(coin.Id))
-                        {
-                            //await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.ConversationID, CreateMessage(recap,coin));
-                            notificationsCoins.Add(coin.Id);
+                    if(coin.UnderSpotlight)
+					{
+                        var lastRSI = CryptoDataPoint.GetRSI(today).Last();
+                        if(lastRSI != null && lastRSI.Y <= 15)
+						{
+                            if (!notificationsCoins.Contains(coin.Id))
+                            {
+                                await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.ConversationID,
+                                    $"RSI for {coin.Code} ({coin.Name}) is {lastRSI.Y}");
+                                notificationsCoins.Add(coin.Id);
+                            }
+                            else if (notificationsCoins.Contains(coin.Id))
+                            {
+                                await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.ConversationID,
+                                     $"RSI for {coin.Code} ({coin.Name}) is above the thresold ({lastRSI.Y})");
+                                notificationsCoins.Remove(coin.Id);
+                            }
                         }
                     }
-                    else if(notificationsCoins.Contains(coin.Id))
-					{
-                        //await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.ConversationID, $"{coin.Code} ({coin.Name}) is now bad");
-                        notificationsCoins.Remove(coin.Id);
-					}
                 }
                 else if(!noDataCoins.ContainsKey(coin.Id))
 				{
