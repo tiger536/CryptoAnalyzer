@@ -51,10 +51,10 @@ namespace CryptoAnalyzer.CoinGecko
                     foreach (var coin in newCoins)
                     {
                         var coinDetail = await _client.GetAsync<CoinDetail>(QueryHelpers.AddQueryString($"coins/{coin.Code}", _queryStringParam));
-                        coin.MarketCapRank = coinDetail.MarketCapRank;
+                        coin.MarketCapRank = coinDetail?.MarketCapRank;
                         await Coin.InsertAsync(coin);
                         //await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.ConversationID,
-                        ///    $"New Coin: {coin.Code}({coin.Name})\n Available at: {string.Join(", ",coinDetail.tickers.Select(x => x.market.name))}");
+                        //    $"New Coin: {coin.Code}({coin.Name})\n Available at: {string.Join(", ",coinDetail.tickers.Select(x => x.market.name))}");
                     }
                 }
                 catch (Exception e)
