@@ -21,7 +21,7 @@ namespace CryptoAnalyzer.CoinGecko
         private readonly HashSet<int> notificationsCoins = new HashSet<int>();
         private readonly Dictionary<int, DateTimeOffset> noDataCoins = new Dictionary<int, DateTimeOffset>();
         private static Dictionary<int, DateTimeOffset> buzzCoinsLastGrab = new Dictionary<int, DateTimeOffset>();
-        private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(6).TotalMilliseconds;
+        private readonly double UPDATE_FREQUENCY = TimeSpan.FromMinutes(4).TotalMilliseconds;
 
         public SpotlightHandler(ThrottledHttpClient client, TelegramBot telegramBot)
         {
@@ -127,15 +127,15 @@ namespace CryptoAnalyzer.CoinGecko
                             if (!notificationsCoins.Contains(coin.Id))
                             {
                                 await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.ConversationID,
-                                    $"RSI for {coin.Code} ({coin.Name}) is {lastRSI.Y}");
+                                    $"RSI for {coin.Code} ({coin.Name}) is {Math.Round(lastRSI.Y,2)}");
                                 notificationsCoins.Add(coin.Id);
                             }
-                            else if (notificationsCoins.Contains(coin.Id))
-                            {
-                                await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.ConversationID,
-                                     $"RSI for {coin.Code} ({coin.Name}) is above the thresold ({lastRSI.Y})");
-                                notificationsCoins.Remove(coin.Id);
-                            }
+                        }
+                        else if (notificationsCoins.Contains(coin.Id) && lastRSI != null)
+                        {
+                            await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.ConversationID,
+                                 $"RSI for {coin.Code} ({coin.Name}) is above the thresold ({Math.Round(lastRSI.Y,2)})");
+                            notificationsCoins.Remove(coin.Id);
                         }
                     }
                 }
@@ -148,21 +148,6 @@ namespace CryptoAnalyzer.CoinGecko
 			{
                 e.LogNoContext();
             }
-        }
-
-		private string CreateMessage(CoinRecap recap, Coin coin)
-		{
-            var sb = new StringBuilder($"{coin.Code} ({coin.Name}) \n");
-            if (recap.LastHourVolumeVariation >= 0.3M)
-                sb.AppendLine($"LastHourVolumeVariation: {Math.Round(recap.LastHourVolumeVariation, 2)}");
-            if (recap.Last3HoursVolumeVariation >= 0.4M)
-                sb.AppendLine($"Last3HoursVolumeVariation: {Math.Round(recap.Last3HoursVolumeVariation, 2)}");
-            if (recap.Last9HoursVolumeVariation >= 0.45M)
-                sb.AppendLine($"Last9HoursVolumeVariation: {Math.Round(recap.Last9HoursVolumeVariation, 2)}");
-            if (recap.HugeVolSpikeLastHour)
-                sb.AppendLine($"HugeVolSpikeLastHour!!");
-
-            return sb.ToString();
         }
 
 		private static List<Coin> GetNewBuzzToGrab(List<Coin> coins, int num)

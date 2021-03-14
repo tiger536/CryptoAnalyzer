@@ -34,13 +34,14 @@ namespace CryptoAnalyzer.Defi
                     var newPairs = (await _defiQLClient.GetNewestPairs()).Where(x => !allDbPairs.Any(y => y.Token0Id.Equals(x.Token0Id))).ToList();
                     if (newPairs.Any())
                     {
+                        await Models.Pair.StoreNewPairsAsync(newPairs);
                         newPairs.ForEach(async x =>
                         {
                             var clones = await Models.Pair.GetCloned(x.Token0Symbol);
                             await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.NewDefiCoinChatID,
                             $"New coin on {x.ExchangeId} ({x.Token0Code}).\n{x.Url}\nhttps://etherscan.io/token/{x.Token0Id}\nDuplicates: {clones}", clones == 0);
                         });
-                        await Models.Pair.StoreNewPairsAsync(newPairs);
+
                     }                  
                 }
                 catch (Exception e)
