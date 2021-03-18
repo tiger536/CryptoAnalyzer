@@ -37,9 +37,9 @@ namespace CryptoAnalyzer.Defi
                         await Models.Pair.StoreNewPairsAsync(newPairs);
                         newPairs.ForEach(async x =>
                         {
-                            var clones = await Models.Pair.GetCloned(x.Token0Symbol);
+                            var totalCount = await Models.Pair.GetTotalCountAsync(x.Token0Symbol);
                             await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.NewDefiCoinChatID,
-                            $"New coin on {x.ExchangeId} ({x.Token0Code}).\n{x.Url}\nhttps://etherscan.io/token/{x.Token0Id}\nDuplicates: {clones}", clones == 0);
+                            $"New coin on {x.ExchangeId} ({x.Token0Code}).\n{x.Url}\nhttps://etherscan.io/token/{x.Token0Id}\nTotal: {totalCount}", totalCount == 1);
                         });
 
                     }                  

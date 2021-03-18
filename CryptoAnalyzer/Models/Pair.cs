@@ -57,7 +57,7 @@ WHERE
             }
         }
 
-        public static async Task<int>GetCloned(string tokenSymbol)
+        public static async Task<int>GetTotalCountAsync(string tokenSymbol)
 		{
             using (var conn = Context.OpenDatabaseConnection())
             {
@@ -65,7 +65,7 @@ WHERE
 SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 DECLARE @symbol VARCHAR(50) = @tokenSymbol
 
-SELECT COUNT(*)-1
+SELECT COUNT(*)
 FROM
 	dbo.Pairs
 WHERE

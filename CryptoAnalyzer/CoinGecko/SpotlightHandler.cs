@@ -134,7 +134,7 @@ namespace CryptoAnalyzer.CoinGecko
                         else if (notificationsCoins.Contains(coin.Id) && lastRSI != null)
                         {
                             await _telegramBot.SendMessageAsync(Context.TelegramBotConfiguration.ConversationID,
-                                 $"RSI for {coin.Code} ({coin.Name}) is above the thresold ({Math.Round(lastRSI.Y,2)})");
+                                 $"RSI for {coin.Code} ({coin.Name}) is above the thresold ({Math.Round(lastRSI.Y,2)})", true);
                             notificationsCoins.Remove(coin.Id);
                         }
                     }
