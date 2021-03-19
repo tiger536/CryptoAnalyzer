@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using StackExchange.Exceptional;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,7 +42,14 @@ namespace CryptoAnalyzer.Service
 
 		public async Task SendMessageAsync(long chatID, string message, bool disableNotification = false)
 		{
-			await _telegramBotClient.SendTextMessageAsync(chatID, message, disableNotification: disableNotification);
+			try
+			{
+				await _telegramBotClient.SendTextMessageAsync(chatID, message, disableNotification: disableNotification);
+			}
+			catch(Exception e)
+			{
+				e.LogNoContext();
+			}
 		}
 	}
 }
