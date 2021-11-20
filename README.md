@@ -9,6 +9,8 @@ In particular it grabs:
 Every other coin is grabber on a low priority and best effort basis since Coingecko heavily throttle your HTTP calls.
 - Number of posts made on /biz as a way to gauche people interest in a particular coin.
 
+A telegram bot can also be set up to warn you about huge coin value variation or when a new coin is added
+
 The homepage will look like this:
 ![image](https://user-images.githubusercontent.com/30831275/142732092-95070701-8a23-46d2-9715-99f14c45fe06.png)
 
