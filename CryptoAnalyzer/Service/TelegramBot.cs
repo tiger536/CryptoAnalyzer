@@ -14,9 +14,12 @@ namespace CryptoAnalyzer.Service
 
 		public Task StartAsync(CancellationToken cancellationToken)
 		{
-			_telegramBotClient = new TelegramBotClient(Context.TelegramBotConfiguration.APIKey);
-			_telegramBotClient.OnMessage += Bot_OnMessage;
-			_telegramBotClient.StartReceiving(cancellationToken: cancellationToken);
+			if (!string.IsNullOrEmpty(Context.TelegramBotConfiguration.APIKey))
+			{
+				_telegramBotClient = new TelegramBotClient(Context.TelegramBotConfiguration.APIKey);
+				_telegramBotClient.OnMessage += Bot_OnMessage;
+				_telegramBotClient.StartReceiving(cancellationToken: cancellationToken);
+			}
 
 			return Task.CompletedTask;
 		}
