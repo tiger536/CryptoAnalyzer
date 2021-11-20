@@ -1,5 +1,6 @@
 # CryptoAnalyzer
 
+## Overview 
 This is an all round dashboard to grab and display cryptocurrencies info.
 In particular it grabs:
 - The latest coin added on CoinGecko every hour
@@ -16,3 +17,12 @@ The homepage will look like this:
 While the coin detail page:
 ![image](https://user-images.githubusercontent.com/30831275/142732212-4c066e94-09cf-404e-98f5-dd0101582ffb.png)
 A chart for OBV, volume comparison, daily posts comparison and price comparison is also present in this page.
+
+## Installation
+
+To run this you will need:
+- A SQL Server database to store data. To create the required tables just run the sql scripts in the migrations folder
+- An API key to grab data from CoinMarketCap (optional)
+- A telegram bot API key (optional)
+
+Everything can be setup in the app settings
